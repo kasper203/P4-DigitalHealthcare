@@ -33,6 +33,7 @@ CREATE TABLE Journal (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     journalinput TEXT,
+    dato DATE,
     author VARCHAR(100)
 );
 
