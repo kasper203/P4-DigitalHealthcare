@@ -1,0 +1,66 @@
+.create-patient-container {
+  min-height: 100vh;
+  padding: 40px;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.patient-form {
+  margin-top: 40px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+.submit-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #6fffe9;
+}
+
+.home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}

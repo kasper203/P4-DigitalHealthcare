@@ -1,0 +1,18 @@
+/* Button.css */
+
+button {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: #6fffe9;
+  transform: translateY(-2px);
+}
