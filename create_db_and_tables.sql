@@ -5,9 +5,9 @@ USE Healthcare_app;
 CREATE TABLE Login (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    username VARCHAR(100),
-    password VARCHAR(255),
-    type VARCHAR(10)
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    type ENUM ('doctor', 'patient')
 );
 
 CREATE TABLE DoctorInfo (
