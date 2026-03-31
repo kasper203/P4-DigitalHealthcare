@@ -1,0 +1,41 @@
+.App {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f2a44, #3a506b);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 40px;
+}
+
+.Login-buttons-group {
+  display: flex;
+  gap: 20px;
+}
+
+.home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.home-button:hover {
+  background-color: #6fffe9;
+}
+
+.create-user-container {
+  position: relative;
+  min-height: 100vh;
+}
