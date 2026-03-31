@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
       !cleanUsername ||
       !password ||
       !confirmPassword ||
-      !fullName ||
+      !name ||
       !cpr ||
       !date_of_birth ||
       !address ||
