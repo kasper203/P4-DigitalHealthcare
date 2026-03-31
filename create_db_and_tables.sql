@@ -4,10 +4,10 @@ USE Healthcare_app;
 
 CREATE TABLE Login (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT NOT NULL,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    type ENUM ('doctor', 'patient')
+    type ENUM ('doctor', 'patient') NOT NULL
 );
 
 CREATE TABLE DoctorInfo (
