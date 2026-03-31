@@ -3,7 +3,8 @@ CREATE DATABASE Healthcare_app;
 USE Healthcare_app;
 
 CREATE TABLE Login (
-    user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     type ENUM ('doctor', 'patient') NOT NULL
@@ -17,8 +18,7 @@ CREATE TABLE DoctorInfo (
 );
 
 CREATE TABLE PatientInfo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     cpr VARCHAR(10),
     date_of_birth DATE,
     address VARCHAR(255),
