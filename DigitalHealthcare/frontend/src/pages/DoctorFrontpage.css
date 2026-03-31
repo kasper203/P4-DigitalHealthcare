@@ -1,0 +1,50 @@
+.doctor-container {
+  min-height: 100vh;
+  padding: 40px;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.patient-box {
+  width: 300px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.patient-list {
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patient-item {
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.patient-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}

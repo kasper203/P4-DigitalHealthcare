@@ -18,8 +18,7 @@ CREATE TABLE DoctorInfo (
 );
 
 CREATE TABLE PatientInfo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     cpr VARCHAR(10),
     date_of_birth DATE,
     address VARCHAR(255),
