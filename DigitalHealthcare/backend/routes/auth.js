@@ -73,15 +73,10 @@ router.post("/register", async (req, res) => {
         `INSERT INTO PatientInfo
          (user_id, cpr, date_of_birth, address, gender, blood_type, name, doctor_id)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [null, cpr, date_of_birth, address, gender, blood_type, fullName, null]
+        [null, cpr, date_of_birth, address, gender, blood_type, name, null]
       );
 
       const newUserId = patientResult.insertId;
-
-      await connection.execute(
-        "UPDATE PatientInfo SET user_id = ? WHERE id = ?",
-        [newUserId, newUserId]
-      );
 
       await connection.execute(
         `INSERT INTO Login (user_id, username, password, user_type)
