@@ -19,11 +19,13 @@ app.use(express.json());
 const journalsRouter = require('./routes/journals');
 const testresultRouter = require('./routes/testresult');
 const authRouter = require("./routes/auth");
+const patientInfoRouter = require('./routes/patientinfo');
 
 
 app.use('/api/testresults', testresultRouter);
 app.use('/api/journals', journalsRouter);
 app.use("/api/auth", authRouter);
+app.use('/api/patientinfo', patientInfoRouter);
 
 const PORT = process.env.PORT || 5000;
 

@@ -40,7 +40,7 @@ const PatientLogin = () => {
 
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/patientfrontpage");
+        navigate("/patient-frontpage");
       }
     } catch (error) {
       setMessage("Could not connect to backend.");

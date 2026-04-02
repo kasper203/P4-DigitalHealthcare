@@ -44,7 +44,7 @@ const CreateUser = () => {
       setMessage(data.message);
 
       if (response.ok) {
-        navigate("/patientlogin");
+        navigate("/patient-login");
       }
     } catch (error) {
       setMessage("Could not connect to backend.");

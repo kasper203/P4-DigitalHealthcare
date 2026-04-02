@@ -29,6 +29,7 @@ return (
     <Route path="/patient-login" element={<PatientLogin />} />
     <Route path="/patient-frontpage" element={<PatientFrontpage />} />
     <Route path="/PatientInfo" element={<PatientInfo />} />
+    <Route path="/patient-info/:patientId" element={<PatientInfo />} />
     <Route path="/create-patient" element={<CreatePatient />} />
     <Route path="/doctor-frontpage" element={<DoctorFrontpage />} />
   </Routes>

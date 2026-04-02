@@ -39,8 +39,8 @@ const DoctorLogin = () => {
       setMessage(data.message);
 
       if (response.ok) {
-        localStorage.setItem("doctor", JSON.stringify(data.user));
-        navigate("/doctorfrontpage");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/doctor-frontpage");
       }
     } catch (error) {
       setMessage("Could not connect to backend.");
