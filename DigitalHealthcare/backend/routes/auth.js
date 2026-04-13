@@ -8,6 +8,28 @@ function normalizeUsername(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function normalizeUserType(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (normalized === "user") return "patient";
+  if (normalized === "patient" || normalized === "doctor") return normalized;
+  return null;
+}
+
+function alternatePatientValue(value) {
+  if (value === "patient") return "user";
+  if (value === "user") return "patient";
+  return value;
+}
+
+function isUnknownColumnError(error) {
+  return error && error.code === "ER_BAD_FIELD_ERROR";
+}
+
+// Simple heuristic to detect if a string looks like an Argon2 hash (error handling)
+function looksLikeArgon2Hash(value) {
+  return typeof value === "string" && value.startsWith("$argon2");
+}
+
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -78,11 +100,23 @@ router.post("/register", async (req, res) => {
 
       const newUserId = patientResult.insertId;
 
-      await connection.execute(
-        `INSERT INTO Login (user_id, username, password, user_type)
-         VALUES (?, ?, ?, ?)`,
-        [newUserId, cleanUsername, hashedPassword, "user"]
-      );
+      try {
+        await connection.execute(
+          `INSERT INTO Login (user_id, username, password, type)
+           VALUES (?, ?, ?, ?)`,
+          [newUserId, cleanUsername, hashedPassword, "patient"]
+        );
+      } catch (err) {
+        if (isUnknownColumnError(err)) {
+          await connection.execute(
+            `INSERT INTO Login (user_id, username, password, user_type)
+             VALUES (?, ?, ?, ?)`,
+            [newUserId, cleanUsername, hashedPassword, "user"]
+          );
+        } else {
+          throw err;
+        }
+      }
 
       await connection.commit();
 
@@ -113,17 +147,51 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    if (user_type !== "user" && user_type !== "doctor") {
+    const normalizedType = normalizeUserType(user_type);
+
+    if (!normalizedType) {
       return res.status(400).json({ message: "Invalid user type." });
     }
 
-    const [rows] = await pool.execute(
-      `SELECT id, user_id, username, password, user_type
-       FROM Login
-       WHERE username = ? AND user_type = ?
-       LIMIT 1`,
-      [cleanUsername, user_type]
-    );
+    let rows;
+    let roleColumn = "type";
+    let roleValue = normalizedType;
+
+    try {
+      [rows] = await pool.execute(
+        `SELECT id, user_id, username, password, type AS selected_role
+         FROM Login
+         WHERE username = ? AND type = ?
+         LIMIT 1`,
+        [cleanUsername, roleValue]
+      );
+    } catch (error) {
+      if (!isUnknownColumnError(error)) {
+        throw error;
+      }
+
+      roleColumn = "user_type";
+      roleValue = alternatePatientValue(normalizedType);
+
+      [rows] = await pool.execute(
+        `SELECT id, user_id, username, password, user_type AS selected_role
+         FROM Login
+         WHERE username = ? AND user_type = ?
+         LIMIT 1`,
+        [cleanUsername, roleValue]
+      );
+    }
+
+    if (rows.length === 0 && roleValue === "patient") {
+      const alternate = alternatePatientValue(roleValue);
+      [rows] = await pool.execute(
+        `SELECT id, user_id, username, password, ${roleColumn} AS selected_role
+         FROM Login
+         WHERE username = ? AND ${roleColumn} = ?
+         LIMIT 1`,
+        [cleanUsername, alternate]
+      );
+    }
 
     if (rows.length === 0) {
       return res.status(401).json({ message: "Invalid username or password." });
@@ -131,7 +199,28 @@ router.post("/login", async (req, res) => {
 
     const account = rows[0];
 
-    const passwordMatches = await argon2.verify(account.password, password);
+    let passwordMatches = false;
+
+    if (looksLikeArgon2Hash(account.password)) {
+      passwordMatches = await argon2.verify(account.password, password);
+    } else {
+      // Support legacy plaintext seed data and transparently upgrade on success.
+      passwordMatches = account.password === password;
+
+      if (passwordMatches) {
+        const upgradedHash = await argon2.hash(password, {
+          type: argon2.argon2id,
+          memoryCost: 19456,
+          timeCost: 2,
+          parallelism: 1,
+        });
+
+        await pool.execute(
+          "UPDATE Login SET password = ? WHERE id = ?",
+          [upgradedHash, account.id]
+        );
+      }
+    }
 
     if (!passwordMatches) {
       return res.status(401).json({ message: "Invalid username or password." });
@@ -143,7 +232,7 @@ router.post("/login", async (req, res) => {
         id: account.id,
         user_id: account.user_id,
         username: account.username,
-        user_type: account.user_type,
+        user_type: account.selected_role === "user" ? "patient" : account.selected_role,
       },
     });
   } catch (error) {

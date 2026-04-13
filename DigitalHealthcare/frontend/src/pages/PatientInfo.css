@@ -8,9 +8,47 @@
 
 .PatientInfo-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   margin-top: 40px;
+}
+
+.journal-section {
+  margin-top: 40px;
+}
+
+.journal-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.journal-section-header h2 {
+  margin: 0;
+}
+
+.journal-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.journal-item {
+  text-align: left;
+}
+
+.journal-text {
+  margin: 0 0 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.journal-meta {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
 }
 
 .card {
@@ -20,13 +58,22 @@
   backdrop-filter: blur(10px);
 }
 
+.info-item h2 {
+  margin: 0 0 10px;
+}
+
+.info-item p {
+  margin: 0;
+  word-break: break-word;
+}
+
 .journal-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-textarea {
+.PatientInfo-container textarea {
   padding: 10px;
   border-radius: 8px;
   border: none;
@@ -34,7 +81,7 @@ textarea {
   height: 100px;
 }
 
-button {
+.PatientInfo-container button {
   padding: 10px;
   border-radius: 8px;
   border: none;
@@ -48,6 +95,20 @@ button {
   position: absolute;
   top: 20px;
   left: 20px;
+  right: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 120px;
   right: auto;
   padding: 8px 16px;
   border-radius: 8px;

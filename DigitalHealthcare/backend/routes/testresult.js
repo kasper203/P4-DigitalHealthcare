@@ -24,4 +24,47 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  const userId = Number(req.body.user_id);
+  const testResult = String(req.body.test_result || '').trim();
+  const testType = String(req.body.test_type || '').trim();
+  const author = String(req.body.author || '').trim();
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Invalid user_id' });
+  }
+
+  if (!testResult) {
+    return res.status(400).json({ error: 'test_result is required' });
+  }
+
+  if (!testType) {
+    return res.status(400).json({ error: 'test_type is required' });
+  }
+
+  if (!author) {
+    return res.status(400).json({ error: 'author is required' });
+  }
+
+  const sql = `
+    INSERT INTO TestInfo (user_id, test_result, date, test_type, author)
+    VALUES (?, ?, CURDATE(), ?, ?)
+  `;
+
+  try {
+    const [result] = await db.execute(sql, [userId, testResult, testType, author]);
+
+    res.status(201).json({
+      id: result.insertId,
+      user_id: userId,
+      test_result: testResult,
+      test_type: testType,
+      author,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create test result' });
+  }
+});
+
 module.exports = router;
