@@ -6,9 +6,56 @@ export const fetchJournalEntries = async (userId) => {
   return res.json();
 };
 
+export const createJournalEntry = async (userId, journalInput, author) => {
+  const res = await fetch(`${API_URL}/journals`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: userId,
+      journal_input: journalInput,
+      author,
+    }),
+  });
+
+  if (!res.ok) {
+    try {
+      const errorData = await res.json();
+      throw new Error(errorData.error || errorData.message || 'Failed to create journal entry');
+    } catch (err) {
+      throw new Error(`Failed to create journal entry (Status ${res.status})`);
+    }
+  }
+
+  return res.json();
+};
+
 export const fetchTestresultsForUser = async (userId) => {
   const res = await fetch(`${API_URL}/testresults/user/${userId}`);
   if (!res.ok) throw new Error('Failed to fetch test results');
+  return res.json();
+};
+
+export const createTestresultEntry = async (userId, testResult, testType, author) => {
+  const res = await fetch(`${API_URL}/testresults`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: userId,
+      test_result: testResult,
+      test_type: testType,
+      author,
+    }),
+  });
+
+  if (!res.ok) {
+    try {
+      const errorData = await res.json();
+      throw new Error(errorData.error || errorData.message || 'Failed to create test result');
+    } catch (err) {
+      throw new Error(`Failed to create test result (Status ${res.status})`);
+    }
+  }
+
   return res.json();
 };
 

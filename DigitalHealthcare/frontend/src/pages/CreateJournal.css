@@ -1,0 +1,73 @@
+.create-journal-container {
+  min-height: 100vh;
+  padding: 40px;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.create-journal-form {
+  max-width: 700px;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.create-journal-form label {
+  font-weight: 600;
+}
+
+.create-journal-form textarea {
+  min-height: 220px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  resize: vertical;
+  font-size: 1rem;
+}
+
+.create-journal-form button {
+  align-self: flex-start;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.create-journal-message {
+  margin-top: 12px;
+  color: #ffb4b4;
+}
+
+.home-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 120px;
+  right: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}

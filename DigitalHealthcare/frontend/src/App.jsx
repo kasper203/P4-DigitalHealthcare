@@ -6,6 +6,8 @@ import DoctorLogin from "./pages/DoctorLogin";
 import PatientLogin from "./pages/PatientLogin";
 import PatientFrontpage from "./pages/PatientFrontpage";
 import PatientInfo from "./pages/PatientInfo";
+import CreateJournal from "./pages/CreateJournal";
+import CreateTestResult from "./pages/CreateTestResult";
 import CreatePatient from "./pages/CreatePatient";
 import DoctorFrontpage from "./pages/DoctorFrontpage";
 
@@ -30,6 +32,8 @@ return (
     <Route path="/patient-frontpage" element={<PatientFrontpage />} />
     <Route path="/PatientInfo" element={<PatientInfo />} />
     <Route path="/patient-info/:patientId" element={<PatientInfo />} />
+    <Route path="/create-journal/:patientId" element={<CreateJournal />} />
+    <Route path="/create-test-result/:patientId" element={<CreateTestResult />} />
     <Route path="/create-patient" element={<CreatePatient />} />
     <Route path="/doctor-frontpage" element={<DoctorFrontpage />} />
   </Routes>

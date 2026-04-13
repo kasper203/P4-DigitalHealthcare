@@ -13,6 +13,37 @@
   margin-top: 40px;
 }
 
+.frontpage-section {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.frontpage-section h2 {
+  margin-bottom: 16px;
+}
+
+.frontpage-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.frontpage-item {
+  text-align: left;
+}
+
+.frontpage-text {
+  margin: 0 0 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.frontpage-meta {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
 .card {
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;
