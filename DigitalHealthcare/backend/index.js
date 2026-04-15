@@ -8,11 +8,13 @@ app.use(express.json());
 
 const journalsRouter = require('./routes/journals');
 const testresultRouter = require('./routes/testresult');
+const authRouter = require('./routes/auth');
 
 app.use('/api/testresults', testresultRouter);
 app.use('/api/journals', journalsRouter);
+app.use('/api/auth', authRouter);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });

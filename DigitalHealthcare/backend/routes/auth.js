@@ -1,5 +1,7 @@
 const express = require("express");
 const argon2 = require("argon2");
+const speakeasy = require("speakeasy");
+const QRCode = require("qrcode");
 const pool = require("../db");
 
 const router = express.Router();
@@ -8,18 +10,15 @@ function normalizeUsername(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+/* =========================
+   REGISTER
+========================= */
 router.post("/register", async (req, res) => {
   try {
     const {
       username,
       password,
       confirmPassword,
-      name,
-      cpr,
-      date_of_birth,
-      address,
-      gender,
-      blood_type,
     } = req.body;
 
     const cleanUsername = normalizeUsername(username);
@@ -27,13 +26,7 @@ router.post("/register", async (req, res) => {
     if (
       !cleanUsername ||
       !password ||
-      !confirmPassword ||
-      !name ||
-      !cpr ||
-      !date_of_birth ||
-      !address ||
-      !gender ||
-      !blood_type
+      !confirmPassword
     ) {
       return res.status(400).json({ message: "All fields are required." });
     }
@@ -49,7 +42,7 @@ router.post("/register", async (req, res) => {
     }
 
     const [existingUser] = await pool.execute(
-      "SELECT id FROM Login WHERE username = ? LIMIT 1",
+      "SELECT id FROM Login WHERE brugernavn = ? LIMIT 1",
       [cleanUsername]
     );
 
@@ -70,18 +63,18 @@ router.post("/register", async (req, res) => {
       await connection.beginTransaction();
 
       const [patientResult] = await connection.execute(
-        `INSERT INTO PatientInfo
-         (user_id, cpr, date_of_birth, address, gender, blood_type, name, doctor_id)
+        `INSERT INTO Patientinfo
+         (user_id, cpr, foedselsdag, adresse, koen, blodtype, navn, laege_id)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [null, cpr, date_of_birth, address, gender, blood_type, name, null]
+        [null, null, null, null, null, null, null, null]
       );
 
       const newUserId = patientResult.insertId;
 
       await connection.execute(
-        `INSERT INTO Login (user_id, username, password, user_type)
-         VALUES (?, ?, ?, ?)`,
-        [newUserId, cleanUsername, hashedPassword, "user"]
+        `INSERT INTO Login (user_id, brugernavn, password, type, two_factor_enabled)
+         VALUES (?, ?, ?, ?, ?)`,
+        [newUserId, cleanUsername, hashedPassword, "user", false]
       );
 
       await connection.commit();
@@ -101,9 +94,77 @@ router.post("/register", async (req, res) => {
   }
 });
 
+/* =========================
+   2FA SETUP (QR CODE)
+========================= */
+router.post("/2fa/setup", async (req, res) => {
+  try {
+    const { user_id } = req.body;
+
+    const secret = speakeasy.generateSecret({
+      length: 20,
+      name: `HealthcareApp (${user_id})`,
+    });
+
+    await pool.execute(
+      "UPDATE Login SET two_factor_secret = ? WHERE user_id = ?",
+      [secret.base32, user_id]
+    );
+
+    const qrCode = await QRCode.toDataURL(secret.otpauth_url);
+
+    return res.json({
+      message: "Scan QR code with Google Authenticator",
+      qrCode,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "2FA setup failed" });
+  }
+});
+
+/* =========================
+   2FA VERIFY (ENABLE)
+========================= */
+router.post("/2fa/verify", async (req, res) => {
+  try {
+    const { user_id, token } = req.body;
+
+    const [rows] = await pool.execute(
+      "SELECT two_factor_secret FROM Login WHERE user_id = ?",
+      [user_id]
+    );
+
+    const secret = rows[0]?.two_factor_secret;
+
+    const verified = speakeasy.totp.verify({
+      secret,
+      encoding: "base32",
+      token,
+      window: 1,
+    });
+
+    if (!verified) {
+      return res.status(400).json({ message: "Invalid code" });
+    }
+
+    await pool.execute(
+      "UPDATE Login SET two_factor_enabled = TRUE WHERE user_id = ?",
+      [user_id]
+    );
+
+    return res.json({ message: "2FA enabled successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Verification failed" });
+  }
+});
+
+/* =========================
+   LOGIN WITH 2FA
+========================= */
 router.post("/login", async (req, res) => {
   try {
-    const { username, password, user_type } = req.body;
+    const { username, password, user_type, token } = req.body;
 
     const cleanUsername = normalizeUsername(username);
 
@@ -118,9 +179,9 @@ router.post("/login", async (req, res) => {
     }
 
     const [rows] = await pool.execute(
-      `SELECT id, user_id, username, password, user_type
+      `SELECT id, user_id, brugernavn, password, type, two_factor_enabled, two_factor_secret
        FROM Login
-       WHERE username = ? AND user_type = ?
+       WHERE brugernavn = ? AND type = ?
        LIMIT 1`,
       [cleanUsername, user_type]
     );
@@ -137,13 +198,35 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password." });
     }
 
+    /* 🔐 2FA CHECK */
+    if (account.two_factor_enabled) {
+      if (!token) {
+        return res.status(206).json({
+          message: "2FA required",
+          requires2FA: true,
+          user_id: account.user_id,
+        });
+      }
+
+      const verified = speakeasy.totp.verify({
+        secret: account.two_factor_secret,
+        encoding: "base32",
+        token,
+        window: 1,
+      });
+
+      if (!verified) {
+        return res.status(401).json({ message: "Invalid 2FA code." });
+      }
+    }
+
     return res.status(200).json({
       message: "Login successful.",
       user: {
         id: account.id,
         user_id: account.user_id,
-        username: account.username,
-        user_type: account.user_type,
+        username: account.brugernavn,
+        user_type: account.type,
       },
     });
   } catch (error) {
