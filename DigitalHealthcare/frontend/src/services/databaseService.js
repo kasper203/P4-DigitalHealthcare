@@ -88,38 +88,24 @@ export const registerPatient = async (patientData) => {
   return res.json();
 };
 
-export const assignPatientToDoctor = async (patientCpr, doctorId) => {
-  const res = await fetch(`${API_URL}/patientinfo/assign`, {
+export const changePassword = async (accountId, currentPassword, newPassword, confirmPassword) => {
+  const res = await fetch(`${API_URL}/auth/change-password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ patientCpr, doctorId }),
+    body: JSON.stringify({
+      accountId,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    }),
   });
   if (!res.ok) {
     try {
       const errorData = await res.json();
-      throw new Error(errorData.error || errorData.message || 'Failed to assign patient');
+      throw new Error(errorData.message || errorData.error || 'Failed to change password');
     } catch (err) {
-      throw new Error(`Failed to assign patient (Status ${res.status})`);
+      throw new Error(`Failed to change password (Status ${res.status})`);
     }
   }
-  return res.json();
-};
-
-export const unassignPatientFromDoctor = async (patientUserId, doctorId) => {
-  const res = await fetch(`${API_URL}/patientinfo/unassign`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ patientUserId, doctorId }),
-  });
-
-  if (!res.ok) {
-    try {
-      const errorData = await res.json();
-      throw new Error(errorData.error || errorData.message || 'Failed to remove patient');
-    } catch (err) {
-      throw new Error(`Failed to remove patient (Status ${res.status})`);
-    }
-  }
-
   return res.json();
 };

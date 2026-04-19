@@ -241,4 +241,72 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/change-password", async (req, res) => {
+  try {
+    const { accountId, user_id, currentPassword, newPassword, confirmPassword } = req.body;
+    const loginId = accountId || user_id;
+
+    if (!loginId || !currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New passwords do not match." });
+    }
+
+    if (newPassword.length < 12) {
+      return res.status(400).json({
+        message: "Password must be at least 12 characters long.",
+      });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        message: "New password must be different from current password.",
+      });
+    }
+
+    const [rows] = await pool.execute(
+      "SELECT id, password FROM Login WHERE id = ? LIMIT 1",
+      [loginId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const account = rows[0];
+    let passwordMatches = false;
+
+    if (looksLikeArgon2Hash(account.password)) {
+      passwordMatches = await argon2.verify(account.password, currentPassword);
+    } else {
+      passwordMatches = account.password === currentPassword;
+    }
+
+    if (!passwordMatches) {
+      return res.status(401).json({ message: "Current password is incorrect." });
+    }
+
+    const hashedNewPassword = await argon2.hash(newPassword, {
+      type: argon2.argon2id,
+      memoryCost: 19456,
+      timeCost: 2,
+      parallelism: 1,
+    });
+
+    await pool.execute(
+      "UPDATE Login SET password = ? WHERE id = ?",
+      [hashedNewPassword, account.id]
+    );
+
+    return res.status(200).json({
+      message: "Password changed successfully.",
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+    return res.status(500).json({ message: "Server error." });
+  }
+});
+
 module.exports = router;

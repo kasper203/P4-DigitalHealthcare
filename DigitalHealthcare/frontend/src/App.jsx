@@ -10,6 +10,7 @@ import CreateJournal from "./pages/CreateJournal";
 import CreateTestResult from "./pages/CreateTestResult";
 import CreatePatient from "./pages/CreatePatient";
 import DoctorFrontpage from "./pages/DoctorFrontpage";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
 return (
@@ -36,6 +37,7 @@ return (
     <Route path="/create-test-result/:patientId" element={<CreateTestResult />} />
     <Route path="/create-patient" element={<CreatePatient />} />
     <Route path="/doctor-frontpage" element={<DoctorFrontpage />} />
+    <Route path="/change-password" element={<ChangePassword />} />
   </Routes>
 );
 }
