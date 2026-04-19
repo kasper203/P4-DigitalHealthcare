@@ -43,6 +43,11 @@ const DoctorFrontpage = () => {
     navigate(`/patient-info/${patientUserId}`);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   return (
     <div className="doctor-container">
 
@@ -52,9 +57,13 @@ const DoctorFrontpage = () => {
         Home
         </button>
 
-    <button onClick={() => navigate("/change-password")}>
-  Change Password
-</button>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+
+        <button onClick={() => navigate("/change-password")}>
+          Change Password
+        </button>
 
       <div className="patient-box">
         <h2>Patients</h2>

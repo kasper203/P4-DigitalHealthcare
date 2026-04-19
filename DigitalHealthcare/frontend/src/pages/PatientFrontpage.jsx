@@ -55,11 +55,20 @@ useEffect(() => {
   loadPatientFrontpage();
 }, []);
 
+const handleLogout = () => {
+  localStorage.removeItem("user");
+  navigate("/");
+};
+
 return (
   <div className="Frontpage-container">
 
     <button className="home-button" onClick={() => navigate("/")}>
       Home
+    </button>
+
+    <button className="logout-button" onClick={handleLogout}>
+      Logout
     </button>
 
     <h1>Patient Front Page</h1>
