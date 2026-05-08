@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+import { loginUser } from "../services/databaseService";
 
 const PatientLogin = () => {
   const navigate = useNavigate();
@@ -23,27 +22,19 @@ const PatientLogin = () => {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-          user_type: "user",
-        }),
+      const data = await loginUser({
+        username: formData.username,
+        password: formData.password,
+        user_type: "user",
       });
-
-      const data = await response.json();
       setMessage(data.message);
 
-      if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/patient-frontpage");
-      }
+      const user = data.user || {}
+      if (user.user_type === 'user') user.user_type = 'patient'
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/patient-frontpage");
     } catch (error) {
-      setMessage("Could not connect to backend.");
+      setMessage(error.message || "Could not connect to backend.");
     }
   };
 

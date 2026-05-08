@@ -18,6 +18,7 @@ router.get('/user/:userId', async (req, res) => {
       p.gender,
       p.blood_type,
       p.name,
+      p.doctor_id,
       d.name AS doctor_name
     FROM PatientInfo p
     LEFT JOIN DoctorInfo d ON d.doctor_id = p.doctor_id
@@ -56,6 +57,23 @@ router.get('/doctor/:doctorId', async (req, res) => {
 
   try {
     const [rows] = await db.execute(sql, [doctorId]);
+    return res.json(rows || []);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Database query failed' });
+  }
+});
+
+// Get list of all doctors
+router.get('/doctors', async (req, res) => {
+  const sql = `
+    SELECT doctor_id, name
+    FROM DoctorInfo
+    ORDER BY name ASC
+  `;
+
+  try {
+    const [rows] = await db.execute(sql);
     return res.json(rows || []);
   } catch (err) {
     console.error(err);

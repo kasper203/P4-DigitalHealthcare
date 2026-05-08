@@ -1,5 +1,14 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
+const parseErrorResponse = async (res, fallbackMessage) => {
+  try {
+    const errorData = await res.json();
+    return errorData.error || errorData.message || fallbackMessage;
+  } catch (_err) {
+    return `${fallbackMessage} (Status ${res.status})`;
+  }
+};
+
 export const fetchJournalEntries = async (userId) => {
   const res = await fetch(`${API_URL}/journals/user/${userId}`);
   if (!res.ok) throw new Error('Failed to fetch journal entries');
@@ -65,6 +74,31 @@ export const fetchPatientInfoForUser = async (userId) => {
   return res.json();
 };
 
+export const fetchAllDoctors = async () => {
+  const res = await fetch(`${API_URL}/patientinfo/doctors`);
+  if (!res.ok) throw new Error('Failed to fetch doctors');
+  return res.json();
+};
+
+export const switchPatientDoctor = async (patientCpr, doctorId) => {
+  const res = await fetch(`${API_URL}/patientinfo/assign`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ patientCpr, doctorId }),
+  });
+
+  if (!res.ok) {
+    try {
+      const data = await res.json();
+      throw new Error(data.error || data.message || 'Failed to switch doctor');
+    } catch (err) {
+      throw new Error(`Failed to switch doctor (Status ${res.status})`);
+    }
+  }
+
+  return res.json();
+};
+
 export const fetchDoctorPatients = async (doctorId) => {
   const res = await fetch(`${API_URL}/patientinfo/doctor/${doctorId}`);
   if (!res.ok) throw new Error('Failed to fetch doctor patients');
@@ -78,14 +112,41 @@ export const registerPatient = async (patientData) => {
     body: JSON.stringify(patientData),
   });
   if (!res.ok) {
-    try {
-      const errorData = await res.json();
-      throw new Error(errorData.message || errorData.error || 'Failed to register patient');
-    } catch (err) {
-      throw new Error(`Failed to register patient (Status ${res.status})`);
-    }
+    throw new Error(await parseErrorResponse(res, 'Failed to register patient'));
   }
   return res.json();
+};
+
+export const registerUser = async (userData) => {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || data.error || `Failed to register user (Status ${res.status})`);
+  }
+
+  return data;
+};
+
+export const loginUser = async ({ username, password, user_type }) => {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, user_type }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || data.error || `Failed to login (Status ${res.status})`);
+  }
+
+  return data;
 };
 
 export const changePassword = async (accountId, currentPassword, newPassword, confirmPassword) => {
