@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
+import Button from "../components/Button";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -19,6 +21,8 @@ const CreateUser = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [multifaSecret, setMultifaSecret] = useState("");
+  const [otpauthUrl, setOtpauthUrl] = useState("");
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -44,7 +48,9 @@ const CreateUser = () => {
       setMessage(data.message);
 
       if (response.ok) {
-        navigate("/patient-login");
+        setMultifaSecret(data.multifa_secret);
+        const url = `otpauth://totp/Sundhed?secret=${data.multifa_secret}`;
+        setOtpauthUrl(url);
       }
     } catch (error) {
       setMessage("Could not connect to backend.");
@@ -127,11 +133,22 @@ const CreateUser = () => {
           value={formData.confirmPassword}
           onChange={handleChange}
         />
-
+        <br />
         <button type="submit">Create Account</button>
       </form>
 
       {message && <p>{message}</p>}
+
+      {otpauthUrl && (
+        <div>
+          <h2>Scan this QR code with Google Authenticator</h2>
+          <QRCodeCanvas value={otpauthUrl} size={256} />
+          <p>Secret: {multifaSecret}</p>
+        </div>
+      )}
+
+      <Button text="Patient Login" path="/patient-login" />
+
     </div>
   );
 };

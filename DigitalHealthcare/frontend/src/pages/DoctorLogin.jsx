@@ -8,6 +8,7 @@ const DoctorLogin = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    otp_code: "",
   });
   const [message, setMessage] = useState("");
 
@@ -32,6 +33,7 @@ const DoctorLogin = () => {
           username: formData.username,
           password: formData.password,
           user_type: "doctor",
+          otp_code: formData.otp_code,
         }),
       });
 
@@ -67,6 +69,16 @@ const DoctorLogin = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="otp_code"
+          placeholder="2FA code"
+          value={formData.otp_code}
+          onChange={handleChange}
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
 
         <button type="submit">Login</button>
