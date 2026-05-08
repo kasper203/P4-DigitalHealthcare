@@ -4,44 +4,43 @@ USE Healthcare_app;
 
 CREATE TABLE Login (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    brugernavn VARCHAR(100),
-    password VARCHAR(255),
-    type VARCHAR(10)
+    user_id INT NOT NULL,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    type ENUM ('doctor', 'patient') NOT NULL
 );
 
-CREATE TABLE Laegeinfo (
+CREATE TABLE DoctorInfo (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    klinikadresse VARCHAR(255),
-    laege_id INT,
-    navn VARCHAR(100)
+    clinic_address VARCHAR(255),
+    doctor_id INT,
+    name VARCHAR(100)
 );
 
-CREATE TABLE Patientinfo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+CREATE TABLE PatientInfo (
+    user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     cpr VARCHAR(10),
-    foedselsdag DATE,
-    adresse VARCHAR(255),
-    koen VARCHAR(20),
-    blodtype VARCHAR(5),
-    navn VARCHAR(100),
-    laege_id INT
+    date_of_birth DATE,
+    address VARCHAR(255),
+    gender VARCHAR(20),
+    blood_type VARCHAR(5),
+    name VARCHAR(100),
+    doctor_id INT
 );
 
 CREATE TABLE Journal (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    journalinput TEXT,
-    dato DATE,
+    journal_input TEXT,
+    date DATE,
     author VARCHAR(100)
 );
 
-CREATE TABLE Testinfo (
+CREATE TABLE TestInfo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    testresultat TEXT,
-    dato DATE,
-    testtype VARCHAR(100),
+    test_result TEXT,
+    date DATE,
+    test_type VARCHAR(100),
     author VARCHAR(100)
 );

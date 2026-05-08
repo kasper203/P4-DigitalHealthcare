@@ -64,3 +64,21 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: auto;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #d64545;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #b93737;
+}
