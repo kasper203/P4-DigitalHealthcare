@@ -4,6 +4,8 @@ import {
   fetchJournalEntries,
   fetchPatientInfoForUser,
   fetchTestresultsForUser,
+  fetchAllDoctors,
+  switchPatientDoctor,
 } from "../services/databaseService";
 import { sanitizeUserInput } from "../utils/sanitize";
 import "./PatientFrontpage.css";
@@ -15,6 +17,9 @@ const [journals, setJournals] = useState([]);
 const [testresults, setTestresults] = useState([]);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState("");
+const [doctors, setDoctors] = useState([]);
+const [selectedDoctorId, setSelectedDoctorId] = useState("");
+const [actionMessage, setActionMessage] = useState("");
 
 useEffect(() => {
   const loadPatientFrontpage = async () => {
@@ -35,15 +40,18 @@ useEffect(() => {
 
       const userId = parsedUser.user_id;
 
-      const [patientData, journalData, testData] = await Promise.all([
+      const [patientData, journalData, testData, doctorsData] = await Promise.all([
         fetchPatientInfoForUser(userId),
         fetchJournalEntries(userId),
         fetchTestresultsForUser(userId),
+        fetchAllDoctors(),
       ]);
 
       setPatientInfo(patientData);
       setJournals(Array.isArray(journalData) ? journalData : []);
       setTestresults(Array.isArray(testData) ? testData : []);
+      setDoctors(Array.isArray(doctorsData) ? doctorsData : []);
+      setSelectedDoctorId(patientData?.doctor_id || "");
     } catch (loadError) {
       setError("Failed to load patient front page.");
       console.error(loadError);
@@ -95,6 +103,55 @@ return (
         <p>Blood Type: {patientInfo?.blood_type || "N/A"}</p>
       </div>
 
+    </div>
+
+    <div className="frontpage-section">
+      <h2>Change Doctor</h2>
+
+      <p>Current doctor: {patientInfo?.doctor_name || 'Not assigned'}</p>
+
+      <label htmlFor="doctor-select">Select new doctor:</label>
+      <select
+        id="doctor-select"
+        value={selectedDoctorId}
+        onChange={(e) => setSelectedDoctorId(e.target.value)}
+      >
+        <option value="">-- Choose doctor --</option>
+        {doctors.map((doc) => (
+          <option key={doc.doctor_id} value={doc.doctor_id}>
+            {doc.name}
+          </option>
+        ))}
+      </select>
+
+      <button
+        onClick={async () => {
+          if (!selectedDoctorId) {
+            setActionMessage('Please select a doctor first.');
+            return;
+          }
+
+          const confirmMsg = `Confirm switch to ${doctors.find(d => String(d.doctor_id) === String(selectedDoctorId))?.name || 'the selected doctor'}?`;
+          if (!window.confirm(confirmMsg)) return;
+
+          try {
+            setActionMessage('Switching doctor...');
+            await switchPatientDoctor(patientInfo.cpr, selectedDoctorId);
+            // refresh patient info
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const updated = await fetchPatientInfoForUser(storedUser.user_id);
+            setPatientInfo(updated);
+            setActionMessage('Doctor switched successfully.');
+          } catch (err) {
+            console.error(err);
+            setActionMessage(err.message || 'Failed to switch doctor.');
+          }
+        }}
+      >
+        Confirm Doctor Change
+      </button>
+
+      {actionMessage && <p>{actionMessage}</p>}
     </div>
 
     <div className="frontpage-section">
