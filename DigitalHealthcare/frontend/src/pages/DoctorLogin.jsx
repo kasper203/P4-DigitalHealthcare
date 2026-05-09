@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/databaseService";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const DoctorLogin = () => {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,6 +36,10 @@ const DoctorLogin = () => {
           otp_code: formData.otp_code,
         }),
       });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `Failed to login (Status ${res.status})`);
+      }
       setMessage(data.message);
 
       const user = data.user || {}
