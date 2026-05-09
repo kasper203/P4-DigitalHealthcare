@@ -46,13 +46,10 @@ const CreateJournal = () => {
 
   return (
     <div className="create-journal-container">
-      <button className="home-button" onClick={() => navigate("/")}>
-        Home
-      </button>
-
-      <button className="back-button" onClick={() => navigate(-1)}>
-        Back
-      </button>
+      <div className="page-controls">
+        <button className="home-button" onClick={() => navigate("/")}>Home</button>
+        <button className="back-button" onClick={() => navigate(-1)}>Back</button>
+      </div>
 
       <h1>Create Journal</h1>
 

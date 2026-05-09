@@ -79,9 +79,9 @@ const CreatePatient = () => {
     <div className="create-patient-container">
       <h1>Create Patient</h1>
 
-      <button className="home-button" onClick={() => navigate("/")}>
-        Home
-      </button>
+      <div className="page-controls">
+        <button className="home-button" onClick={() => navigate("/")}>Home</button>
+      </div>
 
       <form className="patient-form" onSubmit={handleSubmit}>
         <div className="form-grid">

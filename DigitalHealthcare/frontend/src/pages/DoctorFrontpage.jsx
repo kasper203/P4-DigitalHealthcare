@@ -53,9 +53,9 @@ const DoctorFrontpage = () => {
 
       <h1>Doctor Front Page</h1>
 
-        <button className="home-button" onClick={() => navigate("/")}>
-        Home
-        </button>
+        <div className="page-controls">
+          <button className="home-button" onClick={() => navigate("/")}>Home</button>
+        </div>
 
         <button className="logout-button" onClick={handleLogout}>
           Logout

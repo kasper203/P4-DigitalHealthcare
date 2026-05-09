@@ -48,10 +48,6 @@
 }
 
 .home-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  right: auto;
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
@@ -59,6 +55,7 @@
   color: #1f2a44;
   font-weight: bold;
   cursor: pointer;
+  margin: 12px;
 }
 
 .logout-button {

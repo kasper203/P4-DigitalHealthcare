@@ -71,9 +71,9 @@ const handleLogout = () => {
 return (
   <div className="Frontpage-container">
 
-    <button className="home-button" onClick={() => navigate("/")}>
-      Home
-    </button>
+    <div className="page-controls">
+      <button className="home-button" onClick={() => navigate("/")}>Home</button>
+    </div>
 
     <button className="logout-button" onClick={handleLogout}>
       Logout

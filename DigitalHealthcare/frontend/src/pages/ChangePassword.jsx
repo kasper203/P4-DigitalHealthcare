@@ -96,9 +96,9 @@ const ChangePassword = () => {
       <div className="change-password-container">
         <h1>Change Password</h1>
         <p className="error">{message}</p>
-        <button onClick={() => navigate("/")} className="back-button">
-          Back to Home
-        </button>
+        <div className="page-controls">
+          <button onClick={() => navigate("/")} className="back-button">Back to Home</button>
+        </div>
       </div>
     );
   }
@@ -107,9 +107,9 @@ const ChangePassword = () => {
     <div className="change-password-container">
       <h1>Change Password</h1>
 
-      <button className="back-button" onClick={() => navigate(-1)}>
-        Back
-      </button>
+      <div className="page-controls">
+        <button className="back-button" onClick={() => navigate(-1)}>Back</button>
+      </div>
 
       <form onSubmit={handleSubmit} className="change-password-form">
         <div className="form-group">

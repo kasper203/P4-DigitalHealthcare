@@ -19,9 +19,28 @@ h1 {
 }
 
 .home-button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #5bc0be;
+  color: #1f2a44;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 12px;
+}
+
+/* top-left header container for home/back controls */
+.page-controls {
   position: absolute;
   top: 20px;
   left: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 50;
+}
+
+.back-button {
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
