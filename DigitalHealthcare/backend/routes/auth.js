@@ -3,6 +3,7 @@ const argon2 = require("argon2");
 const pool = require("../db");
 const speakeasy = require("speakeasy");
 const router = express.Router();
+const { encryptField } = require("../encryptionHelper");
 
 function normalizeUsername(value) {
   return String(value || "").trim().toLowerCase();
@@ -88,14 +89,30 @@ router.post("/register", async (req, res) => {
 
     const connection = await pool.getConnection();
 
+    const encryptedName = encryptField(name);
+    const encryptedCpr = encryptField(cpr);
+    const encryptedDob = date_of_birth; // leave as DATE if you want date logic
+    const encryptedAddress = encryptField(address);
+    const encryptedGender = encryptField(gender);
+    const encryptedBloodType = encryptField(blood_type);
+
     try {
       await connection.beginTransaction();
 
       const [patientResult] = await connection.execute(
         `INSERT INTO PatientInfo
-         (user_id, cpr, date_of_birth, address, gender, blood_type, name, doctor_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [null, cpr, date_of_birth, address, gender, blood_type, name, null]
+        (user_id, cpr, date_of_birth, address, gender, blood_type, name, doctor_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          null,
+          encryptedCpr,
+          encryptedDob,
+          encryptedAddress,
+          encryptedGender,
+          encryptedBloodType,
+          encryptedName,
+          null
+        ]
       );
 
       const newUserId = patientResult.insertId;

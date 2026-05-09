@@ -53,7 +53,7 @@ useEffect(() => {
       setDoctors(Array.isArray(doctorsData) ? doctorsData : []);
       setSelectedDoctorId(patientData?.doctor_id || "");
     } catch (loadError) {
-      setError("Failed to load patient front page.");
+      setError(loadError?.message || "Failed to load patient front page.");
       console.error(loadError);
     } finally {
       setLoading(false);
@@ -136,7 +136,7 @@ return (
 
           try {
             setActionMessage('Switching doctor...');
-            await switchPatientDoctor(patientInfo.cpr, selectedDoctorId);
+            await switchPatientDoctor(patientInfo.user_id, selectedDoctorId);
             // refresh patient info
             const storedUser = JSON.parse(localStorage.getItem('user'));
             const updated = await fetchPatientInfoForUser(storedUser.user_id);
