@@ -39,12 +39,9 @@ const CreateUser = () => {
     try {
       const data = await registerUser(formData);
       setMessage(data.message);
-
-      if (response.ok) {
-        setMultifaSecret(data.multifa_secret);
-        const url = `otpauth://totp/Sundhed?secret=${data.multifa_secret}`;
-        setOtpauthUrl(url);
-      }
+      setMultifaSecret(data.multifa_secret);
+      const url = `otpauth://totp/Sundhed?secret=${data.multifa_secret}`;
+      setOtpauthUrl(url);
     } catch (error) {
       setMessage(error.message || "Could not connect to backend.");
     }
