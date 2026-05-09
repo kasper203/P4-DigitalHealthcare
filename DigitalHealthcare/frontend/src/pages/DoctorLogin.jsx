@@ -7,6 +7,7 @@ const DoctorLogin = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    otp_code: "",
   });
   const [message, setMessage] = useState("");
 
@@ -22,10 +23,17 @@ const DoctorLogin = () => {
     setMessage("");
 
     try {
-      const data = await loginUser({
-        username: formData.username,
-        password: formData.password,
-        user_type: "doctor",
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+          user_type: "doctor",
+          otp_code: formData.otp_code,
+        }),
       });
       setMessage(data.message);
 
@@ -59,6 +67,16 @@ const DoctorLogin = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="otp_code"
+          placeholder="2FA code"
+          value={formData.otp_code}
+          onChange={handleChange}
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
 
         <button type="submit">Login</button>

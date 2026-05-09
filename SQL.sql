@@ -7,7 +7,8 @@ CREATE TABLE Login (
     user_id INT NOT NULL,
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    type ENUM ('doctor', 'patient') NOT NULL
+    type ENUM ('doctor', 'patient') NOT NULL,
+    multifa_secret VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE DoctorInfo (

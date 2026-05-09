@@ -1,7 +1,7 @@
 const express = require("express");
 const argon2 = require("argon2");
 const pool = require("../db");
-
+const speakeasy = require("speakeasy");
 const router = express.Router();
 
 function normalizeUsername(value) {
@@ -100,18 +100,20 @@ router.post("/register", async (req, res) => {
 
       const newUserId = patientResult.insertId;
 
+      const multifa_secret = speakeasy.generateSecret({ length: 32 }).base32;
+
       try {
         await connection.execute(
-          `INSERT INTO Login (user_id, username, password, type)
-           VALUES (?, ?, ?, ?)`,
-          [newUserId, cleanUsername, hashedPassword, "patient"]
+          `INSERT INTO Login (user_id, username, password, type, multifa_secret)
+           VALUES (?, ?, ?, ?, ?)`,
+          [newUserId, cleanUsername, hashedPassword, "patient", multifa_secret]
         );
       } catch (err) {
         if (isUnknownColumnError(err)) {
           await connection.execute(
-            `INSERT INTO Login (user_id, username, password, user_type)
-             VALUES (?, ?, ?, ?)`,
-            [newUserId, cleanUsername, hashedPassword, "user"]
+            `INSERT INTO Login (user_id, username, password, user_type, multifa_secret)
+             VALUES (?, ?, ?, ?, ?)`,
+            [newUserId, cleanUsername, hashedPassword, "user", multifa_secret]
           );
         } else {
           throw err;
@@ -122,6 +124,7 @@ router.post("/register", async (req, res) => {
 
       return res.status(201).json({
         message: "User created successfully.",
+        multifa_secret: multifa_secret,
       });
     } catch (err) {
       await connection.rollback();
@@ -137,13 +140,13 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { username, password, user_type } = req.body;
+    const { username, password, user_type, otp_code } = req.body;
 
     const cleanUsername = normalizeUsername(username);
 
-    if (!cleanUsername || !password || !user_type) {
+    if (!cleanUsername || !password || !user_type || !otp_code) {
       return res.status(400).json({
-        message: "Username, password and user type are required.",
+        message: "Username, password, user type and 2FA code are required.",
       });
     }
 
@@ -159,7 +162,7 @@ router.post("/login", async (req, res) => {
 
     try {
       [rows] = await pool.execute(
-        `SELECT id, user_id, username, password, type AS selected_role
+        `SELECT id, user_id, username, password, multifa_secret, type AS selected_role
          FROM Login
          WHERE username = ? AND type = ?
          LIMIT 1`,
@@ -174,7 +177,7 @@ router.post("/login", async (req, res) => {
       roleValue = alternatePatientValue(normalizedType);
 
       [rows] = await pool.execute(
-        `SELECT id, user_id, username, password, user_type AS selected_role
+        `SELECT id, user_id, username, password, multifa_secret, user_type AS selected_role
          FROM Login
          WHERE username = ? AND user_type = ?
          LIMIT 1`,
@@ -185,7 +188,7 @@ router.post("/login", async (req, res) => {
     if (rows.length === 0 && roleValue === "patient") {
       const alternate = alternatePatientValue(roleValue);
       [rows] = await pool.execute(
-        `SELECT id, user_id, username, password, ${roleColumn} AS selected_role
+        `SELECT id, user_id, username, password, multifa_secret, ${roleColumn} AS selected_role
          FROM Login
          WHERE username = ? AND ${roleColumn} = ?
          LIMIT 1`,
@@ -200,6 +203,7 @@ router.post("/login", async (req, res) => {
     const account = rows[0];
 
     let passwordMatches = false;
+    let multifaMatches = false;
 
     if (looksLikeArgon2Hash(account.password)) {
       passwordMatches = await argon2.verify(account.password, password);
@@ -222,8 +226,20 @@ router.post("/login", async (req, res) => {
       }
     }
 
+
     if (!passwordMatches) {
       return res.status(401).json({ message: "Invalid username or password." });
+    }
+
+    const validOtp = speakeasy.totp.verify({
+      secret: account.multifa_secret,
+      encoding: "base32",
+      token: String(otp_code).trim(),
+      window: 2,
+    });
+
+    if (!validOtp) {
+      return res.status(401).json({ message: "Invalid 2FA code." });
     }
 
     return res.status(200).json({
@@ -233,6 +249,7 @@ router.post("/login", async (req, res) => {
         user_id: account.user_id,
         username: account.username,
         user_type: account.selected_role === "user" ? "patient" : account.selected_role,
+        multifa_secret: account.multifa_secret,
       },
     });
   } catch (error) {
