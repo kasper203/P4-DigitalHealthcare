@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db'); // mysql pool
 const router = express.Router();
+const { encryptField, decryptField } = require('../encryptionHelper');
 
 router.get('/user/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
@@ -10,14 +11,22 @@ router.get('/user/:userId', async (req, res) => {
 
   const sql = ` 
     SELECT id, user_id, test_result, date, test_type, author
-    FROM testinfo
+    FROM TestInfo
     WHERE user_id = ?
     ORDER BY date DESC
   `;
 
   try {
-    const [rows] = await db.execute(sql, [userId]);  // parameterized
-    res.json(rows);
+    const [rows] = await db.execute(sql, [userId]); // parameterized
+
+    const decryptedRows = rows.map((row) => ({
+      ...row,
+      test_result: decryptField(row.test_result),
+      test_type: decryptField(row.test_type),
+      author: decryptField(row.author),
+    }));
+
+    res.json(decryptedRows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database query failed' });
@@ -46,13 +55,22 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'author is required' });
   }
 
+  const encryptedTestResult = encryptField(testResult);
+  const encryptedTestType = encryptField(testType);
+  const encryptedAuthor = encryptField(author);
+
   const sql = `
     INSERT INTO TestInfo (user_id, test_result, date, test_type, author)
     VALUES (?, ?, CURDATE(), ?, ?)
   `;
 
   try {
-    const [result] = await db.execute(sql, [userId, testResult, testType, author]);
+    const [result] = await db.execute(sql, [
+      userId,
+      encryptedTestResult,
+      encryptedTestType,
+      encryptedAuthor,
+    ]);
 
     res.status(201).json({
       id: result.insertId,

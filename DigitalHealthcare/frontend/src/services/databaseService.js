@@ -80,11 +80,11 @@ export const fetchAllDoctors = async () => {
   return res.json();
 };
 
-export const switchPatientDoctor = async (patientCpr, doctorId) => {
+export const switchPatientDoctor = async (patientUserId, doctorId) => {
   const res = await fetch(`${API_URL}/patientinfo/assign`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ patientCpr, doctorId }),
+    body: JSON.stringify({ patientUserId, doctorId }),
   });
 
   if (!res.ok) {
