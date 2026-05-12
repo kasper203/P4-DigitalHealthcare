@@ -1,5 +1,6 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
+import { getAuthToken, getStoredUser } from '../utils/auth'
 
 const normalizeRole = (role) => {
   if (!role) return null
@@ -9,10 +10,10 @@ const normalizeRole = (role) => {
 
 const ProtectedRoute = ({ requiredRole, children }) => {
   try {
-    const raw = localStorage.getItem('user')
-    if (!raw) return <Navigate to="/" replace />
+    const token = getAuthToken()
+    const user = getStoredUser()
+    if (!token || !user) return <Navigate to="/" replace />
 
-    const user = JSON.parse(raw)
     const role = normalizeRole(user.user_type || user.type || user.role)
 
     if (!requiredRole) return children

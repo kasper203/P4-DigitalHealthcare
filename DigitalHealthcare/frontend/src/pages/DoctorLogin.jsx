@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setAuthSession } from "../utils/auth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -42,10 +43,9 @@ const DoctorLogin = () => {
       }
       setMessage(data.message);
 
-      const user = data.user || {}
-      // normalize possible backend variants
-      if (user.user_type === 'user') user.user_type = 'patient'
-      localStorage.setItem("user", JSON.stringify(user));
+      const user = data.user || {};
+      if (user.user_type === 'user') user.user_type = 'patient';
+      setAuthSession(user, data.token);
       navigate("/doctor-frontpage");
     } catch (error) {
       setMessage(error.message || "Could not connect to backend.");

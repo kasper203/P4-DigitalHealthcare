@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createTestresultEntry } from "../services/databaseService";
+import { getStoredUser } from "../utils/auth";
 import "./CreateTestResult.css";
 
 const CreateTestResult = () => {
@@ -37,8 +38,7 @@ const CreateTestResult = () => {
     setSubmitting(true);
 
     try {
-      const storedUser = localStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      const parsedUser = getStoredUser();
       const author = parsedUser?.username || "Unknown";
 
       await createTestresultEntry(normalizedPatientId, normalizedResult, normalizedType, author);
