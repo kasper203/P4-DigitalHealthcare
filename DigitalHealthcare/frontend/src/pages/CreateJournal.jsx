@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createJournalEntry } from "../services/databaseService";
+import { getStoredUser } from "../utils/auth";
 import "./CreateJournal.css";
 
 const CreateJournal = () => {
@@ -30,8 +31,7 @@ const CreateJournal = () => {
     setSubmitting(true);
 
     try {
-      const storedUser = localStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      const parsedUser = getStoredUser();
       const author = parsedUser?.username || "Unknown";
 
       await createJournalEntry(normalizedPatientId, normalizedText, author);

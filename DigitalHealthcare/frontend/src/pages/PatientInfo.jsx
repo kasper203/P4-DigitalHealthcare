@@ -5,6 +5,7 @@ import {
   fetchJournalEntries,
   fetchTestresultsForUser,
 } from "../services/databaseService";
+import { getStoredUser } from "../utils/auth";
 import { sanitizeUserInput } from "../utils/sanitize";
 import "./PatientInfo.css";
 
@@ -26,14 +27,13 @@ const PatientInfo = () => {
         if (patientId) {
           userId = Number(patientId);
         } else {
-          const storedUser = localStorage.getItem("user");
-          if (!storedUser) {
+          const parsedUser = getStoredUser();
+          if (!parsedUser) {
             setError("You must be logged in to view patient information.");
             setLoading(false);
             return;
           }
 
-          const parsedUser = JSON.parse(storedUser);
           if (!parsedUser?.user_id) {
             setError("Could not find patient id in session.");
             setLoading(false);

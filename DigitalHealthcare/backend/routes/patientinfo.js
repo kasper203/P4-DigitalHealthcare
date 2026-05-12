@@ -2,11 +2,18 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 const { decryptField } = require('../encryptionHelper');
+const { authenticateToken, canAccessUserRecord } = require('../middleware/jwtAuth');
+
+router.use(authenticateToken);
 
 router.get('/user/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
   if (!userId) {
     return res.status(400).json({ error: 'Invalid userId' });
+  }
+
+  if (!canAccessUserRecord(req, userId)) {
+    return res.status(403).json({ error: 'You do not have access to this patient.' });
   }
 
   const sql = `
@@ -48,6 +55,10 @@ router.get('/doctor/:doctorId', async (req, res) => {
   const doctorId = Number(req.params.doctorId);
   if (!doctorId) {
     return res.status(400).json({ error: 'Invalid doctorId' });
+  }
+
+  if (String(req.auth?.role || '').toLowerCase() !== 'doctor' || Number(req.auth.userId) !== doctorId) {
+    return res.status(403).json({ error: 'You do not have access to this doctor list.' });
   }
 
   const sql = `
@@ -112,6 +123,11 @@ router.post('/assign', async (req, res) => {
     return res.status(400).json({ error: 'patientUserId must be a valid number' });
   }
 
+  const authRole = String(req.auth?.role || '').toLowerCase();
+  if (authRole !== 'doctor' && Number(req.auth.userId) !== userId) {
+    return res.status(403).json({ error: 'You do not have access to update this patient.' });
+  }
+
   const sql = `
     UPDATE PatientInfo
     SET doctor_id = ?
@@ -138,6 +154,10 @@ router.post('/unassign', async (req, res) => {
 
   if (!patientUserId || !doctorId) {
     return res.status(400).json({ error: 'patientUserId and doctorId are required' });
+  }
+
+  if (String(req.auth?.role || '').toLowerCase() !== 'doctor' || Number(req.auth.userId) !== Number(doctorId)) {
+    return res.status(403).json({ error: 'You do not have access to update this patient.' });
   }
 
   const sql = `

@@ -2,11 +2,18 @@ const express = require('express');
 const db = require('../db'); // mysql pool
 const router = express.Router();
 const { encryptField, decryptField } = require('../encryptionHelper');
+const { authenticateToken, canAccessUserRecord } = require('../middleware/jwtAuth');
+
+router.use(authenticateToken);
 
 router.get('/user/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
   if (!userId) {
     return res.status(400).json({ error: 'Invalid userId' });
+  }
+
+  if (!canAccessUserRecord(req, userId)) {
+    return res.status(403).json({ error: 'You do not have access to this patient.' });
   }
 
   const sql = ` 
@@ -34,6 +41,10 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  if (String(req.auth?.role || '').toLowerCase() !== 'doctor') {
+    return res.status(403).json({ error: 'Only doctors can create test results.' });
+  }
+
   const userId = Number(req.body.user_id);
   const testResult = String(req.body.test_result || '').trim();
   const testType = String(req.body.test_type || '').trim();

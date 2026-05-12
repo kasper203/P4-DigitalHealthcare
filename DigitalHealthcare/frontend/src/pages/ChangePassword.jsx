@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { changePassword } from "../services/databaseService";
+import { getStoredUser } from "../utils/auth";
 import "./ChangePassword.css";
 
 const ChangePassword = () => {
@@ -15,13 +16,12 @@ const ChangePassword = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
+    const parsedUser = getStoredUser();
+    if (!parsedUser) {
       setMessage("Error: You must be logged in to change your password.");
       return;
     }
 
-    const parsedUser = JSON.parse(storedUser);
     if (!parsedUser?.id) {
       setMessage("Error: Could not find login id in session.");
       return;

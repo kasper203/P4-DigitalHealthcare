@@ -7,6 +7,7 @@ import {
   fetchAllDoctors,
   switchPatientDoctor,
 } from "../services/databaseService";
+import { clearAuthSession, getStoredUser } from "../utils/auth";
 import { sanitizeUserInput } from "../utils/sanitize";
 import "./PatientFrontpage.css";
 
@@ -24,14 +25,13 @@ const [actionMessage, setActionMessage] = useState("");
 useEffect(() => {
   const loadPatientFrontpage = async () => {
     try {
-      const storedUser = localStorage.getItem("user");
-      if (!storedUser) {
+      const parsedUser = getStoredUser();
+      if (!parsedUser) {
         setError("You must be logged in to view this page.");
         setLoading(false);
         return;
       }
 
-      const parsedUser = JSON.parse(storedUser);
       if (!parsedUser?.user_id) {
         setError("Could not find patient id in session.");
         setLoading(false);
@@ -64,7 +64,7 @@ useEffect(() => {
 }, []);
 
 const handleLogout = () => {
-  localStorage.removeItem("user");
+  clearAuthSession();
   navigate("/");
 };
 
@@ -138,7 +138,7 @@ return (
             setActionMessage('Switching doctor...');
             await switchPatientDoctor(patientInfo.user_id, selectedDoctorId);
             // refresh patient info
-            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const storedUser = getStoredUser();
             const updated = await fetchPatientInfoForUser(storedUser.user_id);
             setPatientInfo(updated);
             setActionMessage('Doctor switched successfully.');
