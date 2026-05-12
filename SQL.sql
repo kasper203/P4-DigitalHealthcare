@@ -45,4 +45,3 @@ CREATE TABLE TestInfo (
     test_type TEXT,
     author TEXT
 );
-);
