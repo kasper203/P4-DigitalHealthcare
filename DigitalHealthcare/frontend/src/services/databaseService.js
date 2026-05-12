@@ -1,3 +1,4 @@
+import { getAuthHeaders } from "../utils/auth";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const parseErrorResponse = async (res, fallbackMessage) => {
@@ -10,7 +11,9 @@ const parseErrorResponse = async (res, fallbackMessage) => {
 };
 
 export const fetchJournalEntries = async (userId) => {
-  const res = await fetch(`${API_URL}/journals/user/${userId}`);
+  const res = await fetch(`${API_URL}/journals/user/${userId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch journal entries');
   return res.json();
 };
@@ -18,7 +21,7 @@ export const fetchJournalEntries = async (userId) => {
 export const createJournalEntry = async (userId, journalInput, author) => {
   const res = await fetch(`${API_URL}/journals`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       user_id: userId,
       journal_input: journalInput,
@@ -39,7 +42,9 @@ export const createJournalEntry = async (userId, journalInput, author) => {
 };
 
 export const fetchTestresultsForUser = async (userId) => {
-  const res = await fetch(`${API_URL}/testresults/user/${userId}`);
+  const res = await fetch(`${API_URL}/testresults/user/${userId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch test results');
   return res.json();
 };
@@ -47,7 +52,7 @@ export const fetchTestresultsForUser = async (userId) => {
 export const createTestresultEntry = async (userId, testResult, testType, author) => {
   const res = await fetch(`${API_URL}/testresults`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       user_id: userId,
       test_result: testResult,
@@ -69,13 +74,17 @@ export const createTestresultEntry = async (userId, testResult, testType, author
 };
 
 export const fetchPatientInfoForUser = async (userId) => {
-  const res = await fetch(`${API_URL}/patientinfo/user/${userId}`);
+  const res = await fetch(`${API_URL}/patientinfo/user/${userId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch patient information');
   return res.json();
 };
 
 export const fetchAllDoctors = async () => {
-  const res = await fetch(`${API_URL}/patientinfo/doctors`);
+  const res = await fetch(`${API_URL}/patientinfo/doctors`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch doctors');
   return res.json();
 };
@@ -83,7 +92,7 @@ export const fetchAllDoctors = async () => {
 export const switchPatientDoctor = async (patientUserId, doctorId) => {
   const res = await fetch(`${API_URL}/patientinfo/assign`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ patientUserId, doctorId }),
   });
 
@@ -100,7 +109,9 @@ export const switchPatientDoctor = async (patientUserId, doctorId) => {
 };
 
 export const fetchDoctorPatients = async (doctorId) => {
-  const res = await fetch(`${API_URL}/patientinfo/doctor/${doctorId}`);
+  const res = await fetch(`${API_URL}/patientinfo/doctor/${doctorId}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch doctor patients');
   return res.json();
 };
@@ -152,7 +163,7 @@ export const loginUser = async ({ username, password, user_type }) => {
 export const changePassword = async (accountId, currentPassword, newPassword, confirmPassword) => {
   const res = await fetch(`${API_URL}/auth/change-password`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       accountId,
       currentPassword,

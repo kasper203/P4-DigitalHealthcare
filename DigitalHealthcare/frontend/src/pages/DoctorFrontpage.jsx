@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchDoctorPatients } from "../services/databaseService";
+import { clearAuthSession, getStoredUser } from "../utils/auth";
 import "./DoctorFrontpage.css";
 
 const DoctorFrontpage = () => {
@@ -12,14 +13,13 @@ const DoctorFrontpage = () => {
   useEffect(() => {
     const loadPatients = async () => {
       try {
-        const storedUser = localStorage.getItem("user");
-        if (!storedUser) {
+        const parsedUser = getStoredUser();
+        if (!parsedUser) {
           setError("You must be logged in to view patients.");
           setLoading(false);
           return;
         }
 
-        const parsedUser = JSON.parse(storedUser);
         if (!parsedUser?.user_id) {
           setError("Could not find doctor id in session.");
           setLoading(false);
@@ -44,7 +44,7 @@ const DoctorFrontpage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    clearAuthSession();
     navigate("/");
   };
 

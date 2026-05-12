@@ -2,8 +2,10 @@ const express = require("express");
 const argon2 = require("argon2");
 const pool = require("../db");
 const speakeasy = require("speakeasy");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const { encryptField } = require("../encryptionHelper");
+const { authenticateToken, getJwtSecret } = require("../middleware/jwtAuth");
 
 function normalizeUsername(value) {
   return String(value || "").trim().toLowerCase();
@@ -29,6 +31,10 @@ function isUnknownColumnError(error) {
 // Simple heuristic to detect if a string looks like an Argon2 hash (error handling)
 function looksLikeArgon2Hash(value) {
   return typeof value === "string" && value.startsWith("$argon2");
+}
+
+function normalizeSelectedRole(value) {
+  return value === "user" ? "patient" : value;
 }
 
 router.post("/register", async (req, res) => {
@@ -259,14 +265,26 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid 2FA code." });
     }
 
+    const role = normalizeSelectedRole(account.selected_role);
+    const token = jwt.sign(
+      {
+        loginId: account.id,
+        userId: account.user_id,
+        username: account.username,
+        role,
+      },
+      getJwtSecret(),
+      { expiresIn: "8h" }
+    );
+
     return res.status(200).json({
       message: "Login successful.",
+      token,
       user: {
         id: account.id,
         user_id: account.user_id,
         username: account.username,
-        user_type: account.selected_role === "user" ? "patient" : account.selected_role,
-        multifa_secret: account.multifa_secret,
+        user_type: role,
       },
     });
   } catch (error) {
@@ -275,10 +293,18 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/change-password", async (req, res) => {
+router.post("/change-password", authenticateToken, async (req, res) => {
   try {
     const { accountId, user_id, currentPassword, newPassword, confirmPassword } = req.body;
-    const loginId = accountId || user_id;
+    const loginId = req.auth.loginId;
+
+    if (accountId && Number(accountId) !== Number(loginId)) {
+      return res.status(403).json({ message: "You can only change your own password." });
+    }
+
+    if (user_id && Number(user_id) !== Number(req.auth.userId)) {
+      return res.status(403).json({ message: "You can only change your own password." });
+    }
 
     if (!loginId || !currentPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required." });
