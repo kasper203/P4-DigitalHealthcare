@@ -4,7 +4,7 @@ import { registerUser } from "../services/databaseService";
 import { QRCodeCanvas } from "qrcode.react";
 import Button from "../components/Button";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const CreateUser = () => {
   const navigate = useNavigate();
