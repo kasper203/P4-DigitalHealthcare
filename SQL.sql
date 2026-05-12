@@ -5,27 +5,27 @@ USE Healthcare_app;
 CREATE TABLE Login (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password TEXT NOT NULL,
     type ENUM ('doctor', 'patient') NOT NULL,
-    multifa_secret VARCHAR(255) NOT NULL
+    multifa_secret TEXT NOT NULL
 );
 
 CREATE TABLE DoctorInfo (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    clinic_address VARCHAR(255),
+    clinic_address TEXT,
     doctor_id INT,
-    name VARCHAR(100)
+    name TEXT
 );
 
 CREATE TABLE PatientInfo (
     user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    cpr VARCHAR(10),
+    cpr TEXT,
     date_of_birth DATE,
-    address VARCHAR(255),
-    gender VARCHAR(20),
-    blood_type VARCHAR(5),
-    name VARCHAR(100),
+    address TEXT,
+    gender TEXT,
+    blood_type TEXT,
+    name TEXT,
     doctor_id INT
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE Journal (
     user_id INT,
     journal_input TEXT,
     date DATE,
-    author VARCHAR(100)
+    author TEXT
 );
 
 CREATE TABLE TestInfo (
@@ -42,6 +42,7 @@ CREATE TABLE TestInfo (
     user_id INT,
     test_result TEXT,
     date DATE,
-    test_type VARCHAR(100),
-    author VARCHAR(100)
+    test_type TEXT,
+    author TEXT
+);
 );
