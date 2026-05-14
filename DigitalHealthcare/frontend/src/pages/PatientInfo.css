@@ -112,3 +112,14 @@
   cursor: pointer;
   margin-bottom: 20px;
 }
+
+.page-error {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255, 77, 77, 0.18);
+  color: #ffb9b9;
+  border: 1px solid rgba(255, 77, 77, 0.35);
+  font-weight: 600;
+}

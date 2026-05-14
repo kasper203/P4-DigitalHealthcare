@@ -77,7 +77,14 @@ export const fetchPatientInfoForUser = async (userId) => {
   const res = await fetch(`${API_URL}/patientinfo/user/${userId}`, {
     headers: getAuthHeaders(),
   });
-  if (!res.ok) throw new Error('Failed to fetch patient information');
+  if (!res.ok) {
+    try {
+      const data = await res.json();
+      throw new Error(data.error || data.message || 'Failed to fetch patient information');
+    } catch (_err) {
+      throw new Error(`Failed to fetch patient information (Status ${res.status})`);
+    }
+  }
   return res.json();
 };
 
@@ -112,7 +119,14 @@ export const fetchDoctorPatients = async (doctorId) => {
   const res = await fetch(`${API_URL}/patientinfo/doctor/${doctorId}`, {
     headers: getAuthHeaders(),
   });
-  if (!res.ok) throw new Error('Failed to fetch doctor patients');
+  if (!res.ok) {
+    try {
+      const data = await res.json();
+      throw new Error(data.error || data.message || 'Failed to fetch doctor patients');
+    } catch (_err) {
+      throw new Error(`Failed to fetch doctor patients (Status ${res.status})`);
+    }
+  }
   return res.json();
 };
 
