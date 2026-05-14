@@ -274,7 +274,7 @@ router.post("/login", async (req, res) => {
         role,
       },
       getJwtSecret(),
-      { expiresIn: "8h" }
+      { expiresIn: "1h" }
     );
 
     return res.status(200).json({
