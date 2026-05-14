@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setAuthSession } from "../utils/auth";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PatientLogin = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const PatientLogin = () => {
     <div>
       <button onClick={() => navigate("/")}>Home</button>
       <h1>Patient Login</h1>
-
+      <h1>VITE_API_URL: {API_URL}</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
