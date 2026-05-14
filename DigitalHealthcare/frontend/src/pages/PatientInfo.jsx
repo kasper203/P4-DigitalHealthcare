@@ -89,7 +89,7 @@ const PatientInfo = () => {
       <h1>Patient Information</h1>
 
       {loading && <p>Loading patient information...</p>}
-      {!loading && error && <p className="page-error">{error}</p>}
+      {!loading && error && <p>{error}</p>}
 
       {!loading && !error && patientInfo && (
         <>
