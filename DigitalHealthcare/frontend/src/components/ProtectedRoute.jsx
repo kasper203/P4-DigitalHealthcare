@@ -11,10 +11,10 @@ const normalizeRole = (role) => {
 const ProtectedRoute = ({ requiredRole, children }) => {
   try {
     const token = getAuthToken()
-    const user = getStoredUser()
-    if (!token || !user) return <Navigate to="/" replace />
+    if (!token) return <Navigate to="/" replace />
 
-    const role = normalizeRole(user.user_type || user.type || user.role)
+    const user = getStoredUser()
+    const role = normalizeRole(user?.user_type)
 
     if (!requiredRole) return children
 

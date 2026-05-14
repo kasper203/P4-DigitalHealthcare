@@ -1,21 +1,16 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { clearAuthSession, getStoredUser } from '../utils/auth'
 
 const AccessDenied = () => {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    localStorage.removeItem('user')
+    clearAuthSession()
     navigate('/')
   }
 
-  let userInfo = null
-  try {
-    const raw = localStorage.getItem('user')
-    if (raw) userInfo = JSON.parse(raw)
-  } catch (_e) {
-    userInfo = null
-  }
+  const userInfo = getStoredUser()
 
   return (
     <div style={{ padding: 20 }}>

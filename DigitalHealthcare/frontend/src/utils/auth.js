@@ -1,10 +1,19 @@
-const USER_KEY = "user";
+import { jwtDecode } from 'jwt-decode';
+
 const TOKEN_KEY = "authToken";
 
 export const getStoredUser = () => {
   try {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    const token = getAuthToken();
+    if (!token) return null;
+
+    const decoded = jwtDecode(token);
+    return {
+      id: decoded.loginId ?? null,
+      user_id: decoded.userId ?? null,
+      username: decoded.username ?? null,
+      user_type: decoded.role ?? null,
+    };
   } catch (_error) {
     return null;
   }
@@ -12,13 +21,11 @@ export const getStoredUser = () => {
 
 export const getAuthToken = () => localStorage.getItem(TOKEN_KEY);
 
-export const setAuthSession = (user, token) => {
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+export const setAuthSession = (_user, token) => {
   localStorage.setItem(TOKEN_KEY, token);
 };
 
 export const clearAuthSession = () => {
-  localStorage.removeItem(USER_KEY);
   localStorage.removeItem(TOKEN_KEY);
 };
 
