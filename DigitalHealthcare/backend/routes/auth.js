@@ -251,7 +251,7 @@ router.post("/login", async (req, res) => {
 
 
     if (!passwordMatches) {
-      return res.status(401).json({ message: "Invalid username or password." });
+      return res.status(401).json({ message: "Login unsuccessful." });
     }
 
     const validOtp = speakeasy.totp.verify({
@@ -262,7 +262,7 @@ router.post("/login", async (req, res) => {
     });
 
     if (!validOtp) {
-      return res.status(401).json({ message: "Invalid 2FA code." });
+      return res.status(401).json({ message: "Login unsuccessful." });
     }
 
     const role = normalizeSelectedRole(account.selected_role);
@@ -278,7 +278,7 @@ router.post("/login", async (req, res) => {
     );
 
     return res.status(200).json({
-      message: "Login successful.",
+      message: "Login successful.", //ALL THIS STUFF NEEDS DELET
       token,
       user: {
         id: account.id,
@@ -287,6 +287,8 @@ router.post("/login", async (req, res) => {
         user_type: role,
       },
     });
+
+
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ message: "Server error." });
