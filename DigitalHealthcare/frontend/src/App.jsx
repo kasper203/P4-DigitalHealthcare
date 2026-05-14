@@ -36,8 +36,16 @@ return (
         <PatientFrontpage />
       </ProtectedRoute>
     } />
-    <Route path="/PatientInfo" element={<PatientInfo />} />
-    <Route path="/patient-info/:patientId" element={<PatientInfo />} />
+    <Route path="/PatientInfo" element={
+      <ProtectedRoute requiredRole="doctor">
+        <PatientInfo />
+      </ProtectedRoute>
+    } />
+    <Route path="/patient-info/:patientId" element={
+      <ProtectedRoute requiredRole="doctor">
+        <PatientInfo />
+      </ProtectedRoute>
+    } />
     <Route path="/create-journal/:patientId" element={
       <ProtectedRoute requiredRole="doctor">
         <CreateJournal />

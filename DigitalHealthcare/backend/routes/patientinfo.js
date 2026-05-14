@@ -33,6 +33,12 @@ router.get('/user/:userId', async (req, res) => {
 
     const patient = rows[0];
 
+    // If the requester is a doctor, only allow access to patients assigned to that doctor
+    const authRole = String(req.auth?.role || '').toLowerCase();
+    if (authRole === 'doctor' && Number(req.auth.userId) !== Number(patient.doctor_id)) {
+      return res.status(403).json({ error: 'You do not have access to this patient.' });
+    }
+
     const safePatient = {
       ...patient,
       user_id: patient.user_id,
