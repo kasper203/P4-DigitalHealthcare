@@ -21,7 +21,7 @@ const authenticateToken = (req, res, next) => {
 const canAccessUserRecord = (req, targetUserId) => {
   const authRole = String(req.auth?.role || "").toLowerCase();
   if (authRole === "doctor") return true;
-  //return Number(req.auth?.userId) === Number(targetUserId);
+  return Number(req.auth?.userId) === Number(targetUserId);
 };
 
 module.exports = {
