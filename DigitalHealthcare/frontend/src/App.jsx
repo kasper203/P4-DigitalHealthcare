@@ -36,11 +36,6 @@ return (
         <PatientFrontpage />
       </ProtectedRoute>
     } />
-    <Route path="/PatientInfo" element={
-      <ProtectedRoute requiredRole="doctor">
-        <PatientInfo />
-      </ProtectedRoute>
-    } />
     <Route path="/patient-info/:patientId" element={
       <ProtectedRoute requiredRole="doctor">
         <PatientInfo />
