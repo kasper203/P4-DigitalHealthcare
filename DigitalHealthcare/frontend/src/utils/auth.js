@@ -19,14 +19,14 @@ export const getStoredUser = () => {
   }
 };
 
-export const getAuthToken = () => localStorage.getItem(TOKEN_KEY);
+export const getAuthToken = () => sessionStorage.getItem(TOKEN_KEY);
 
 export const setAuthSession = (_user, token) => {
-  localStorage.setItem(TOKEN_KEY, token);
+  sessionStorage.setItem(TOKEN_KEY, token);
 };
 
 export const clearAuthSession = () => {
-  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
 };
 
 export const getAuthHeaders = (headers = {}) => {
