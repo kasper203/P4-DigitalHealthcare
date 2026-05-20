@@ -56,7 +56,6 @@ const PatientLogin = () => {
     <div>
       <button onClick={() => navigate("/")}>Home</button>
       <h1>Patient Login</h1>
-      <h1>VITE_API_URL: {API_URL}</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

@@ -116,17 +116,6 @@ export const fetchDoctorPatients = async (doctorId) => {
   return res.json();
 };
 
-export const registerPatient = async (patientData) => {
-  const res = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(patientData),
-  });
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res, 'Failed to register patient'));
-  }
-  return res.json();
-};
 
 export const registerUser = async (userData) => {
   const res = await fetch(`${API_URL}/auth/register`, {
