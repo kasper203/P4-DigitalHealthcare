@@ -3,6 +3,7 @@ const argon2 = require("argon2");
 const pool = require("../db");
 const speakeasy = require("speakeasy");
 const jwt = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const { encryptField } = require("../encryptionHelper");
 const { authenticateToken, getJwtSecret } = require("../middleware/jwtAuth");
@@ -22,6 +23,17 @@ function normalizeSelectedRole(value) {
   return value === "user" ? "patient" : value;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login attempts per windowMs
+  message: {
+    message: "Too many login attempts from this IP, please try again after 15 minutes.",
+  },
+});
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -73,8 +85,8 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await argon2.hash(password, {
       type: argon2.argon2id,
-      memoryCost: 19456,
-      timeCost: 2,
+      memoryCost: 12288,
+      timeCost: 3,
       parallelism: 1,
     });
 
@@ -134,7 +146,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { username, password, user_type, otp_code } = req.body;
 
@@ -161,6 +173,7 @@ router.post("/login", async (req, res) => {
     );
 
     if (rows.length === 0) {
+      await sleep(2000);
       return res.status(401).json({ message: "Invalid username or password." });
     }
 
@@ -169,6 +182,7 @@ router.post("/login", async (req, res) => {
     const passwordMatches = await argon2.verify(account.password, password);
 
     if (!passwordMatches) {
+      await sleep(2000);
       return res.status(401).json({ message: "Login unsuccessful." });
     }
 
@@ -180,6 +194,7 @@ router.post("/login", async (req, res) => {
     });
 
     if (!validOtp) {
+      await sleep(2000);
       return res.status(401).json({ message: "Login unsuccessful." });
     }
 
