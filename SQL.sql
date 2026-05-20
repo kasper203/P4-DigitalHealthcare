@@ -12,9 +12,8 @@ CREATE TABLE Login (
 );
 
 CREATE TABLE DoctorInfo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_id INT AUTO_INCREMENT PRIMARY KEY,
     clinic_address TEXT,
-    doctor_id INT,
     name TEXT
 );
 
