@@ -36,6 +36,17 @@ const CreateUser = () => {
     e.preventDefault();
     setMessage("");
 
+    const { password, confirmPassword } = formData;
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    if (!password || password.length < 12) {
+      setMessage("Password must be at least 12 characters long.");
+      return;
+    }
+
     try {
       const data = await registerUser(formData);
       setMessage(data.message);
