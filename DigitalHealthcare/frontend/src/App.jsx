@@ -8,7 +8,6 @@ import PatientFrontpage from "./pages/PatientFrontpage";
 import PatientInfo from "./pages/PatientInfo";
 import CreateJournal from "./pages/CreateJournal";
 import CreateTestResult from "./pages/CreateTestResult";
-import CreatePatient from "./pages/CreatePatient";
 import DoctorFrontpage from "./pages/DoctorFrontpage";
 import ChangePassword from "./pages/ChangePassword";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -37,8 +36,11 @@ return (
         <PatientFrontpage />
       </ProtectedRoute>
     } />
-    <Route path="/PatientInfo" element={<PatientInfo />} />
-    <Route path="/patient-info/:patientId" element={<PatientInfo />} />
+    <Route path="/patient-info/:patientId" element={
+      <ProtectedRoute requiredRole="doctor">
+        <PatientInfo />
+      </ProtectedRoute>
+    } />
     <Route path="/create-journal/:patientId" element={
       <ProtectedRoute requiredRole="doctor">
         <CreateJournal />
@@ -47,11 +49,6 @@ return (
     <Route path="/create-test-result/:patientId" element={
       <ProtectedRoute requiredRole="doctor">
         <CreateTestResult />
-      </ProtectedRoute>
-    } />
-    <Route path="/create-patient" element={
-      <ProtectedRoute requiredRole="doctor">
-        <CreatePatient />
       </ProtectedRoute>
     } />
     <Route path="/doctor-frontpage" element={

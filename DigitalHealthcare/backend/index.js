@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const https = require('node:https');
+const fs = require('node:fs');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +26,10 @@ app.use(
 
 app.use(express.json());
 
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, message: 'Backend is running securely' });
+});
+
 const journalsRouter = require('./routes/journals');
 const testresultRouter = require('./routes/testresult');
 const authRouter = require('./routes/auth');
@@ -36,9 +42,12 @@ app.use('/api/patientinfo', patientInfoRouter);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Backend running on http://0.0.0.0:${PORT}`);
-});
-app.get('/api/health', (req, res) => {
-  res.json({ ok: true, message: 'Backend is running' });
+const httpsOptions = {
+  key: fs.readFileSync('./certs/backend-key.pem'),
+  cert: fs.readFileSync('./certs/backend-cert.pem'),
+  minVersion: 'TLSv1.2',
+};
+
+https.createServer(httpsOptions, app).listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend running on https://0.0.0.0:${PORT}`);
 });
