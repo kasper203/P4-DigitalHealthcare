@@ -11,7 +11,6 @@ app.use(
     origin: (origin, callback) => {
       if (
         !origin ||
-        /^http:\/\/localhost:\d+$/.test(origin) ||
         /^https:\/\/localhost:\d+$/.test(origin) ||
         origin === process.env.FRONTEND_ORIGIN
       ) {
