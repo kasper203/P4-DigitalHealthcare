@@ -28,7 +28,7 @@ function sleep(ms) {
 }
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 1 * 60 * 1000, // 1 minute(s)
   max: 5, // Limit each IP to 5 login attempts per windowMs
   message: {
     message: "Too many login attempts from this IP, please try again after 15 minutes.",
