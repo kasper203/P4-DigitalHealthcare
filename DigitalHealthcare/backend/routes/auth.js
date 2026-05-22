@@ -27,9 +27,79 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/*function validateRegisterInput(body) {
+  const {
+    username,
+    password,
+    confirmPassword,
+    name,
+    cpr,
+    date_of_birth,
+    address,
+    gender,
+    blood_type,
+  } = body;
+
+  const errors = [];
+
+  // Check all fields exist
+  if (!String(username || "").trim()) errors.push("Username is required.");
+  if (!password) errors.push("Password is required.");
+  if (!confirmPassword) errors.push("Password confirmation is required.");
+  if (!String(name || "").trim()) errors.push("Name is required.");
+  if (!String(cpr || "").trim()) errors.push("CPR is required.");
+  if (!date_of_birth) errors.push("Date of birth is required.");
+  if (!String(address || "").trim()) errors.push("Address is required.");
+  if (!gender) errors.push("Gender is required.");
+  if (!blood_type) errors.push("Blood type is required.");
+
+  // Validate password
+  if (password && password.length < 12) {
+    errors.push("Password must be at least 12 characters long.");
+  }
+
+  // Validate password match
+  if (password && confirmPassword && password !== confirmPassword) {
+    errors.push("Passwords do not match.");
+  }
+
+  // Validate username length
+  if (String(username || "").trim().length < 3) {
+    errors.push("Username must be at least 3 characters long.");
+  }
+
+  // Validate allowed gender values
+  const allowedGenders = ["male", "female", "other"];
+  if (gender && !allowedGenders.includes(String(gender).toLowerCase())) {
+    errors.push("Invalid gender. Use: male, female, or other.");
+  }
+
+  // Validate allowed blood type values
+  const allowedBloodTypes = [
+    "O+",
+    "O-",
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "AB+",
+    "AB-",
+  ];
+  if (blood_type && !allowedBloodTypes.includes(String(blood_type).toUpperCase())) {
+    errors.push("Invalid blood type. Use: O±, A±, B±, or AB±.");
+  }
+
+  // Validate date format (YYYY-MM-DD)
+  if (date_of_birth && !/^\d{4}-\d{2}-\d{2}$/.test(date_of_birth)) {
+    errors.push("Date of birth must be in YYYY-MM-DD format.");
+  }
+
+  return errors;
+}*/
+
 const loginLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute(s)
-  max: 5, // Limit each IP to 5 login attempts per windowMs
+  windowMs: 1 * 60 * 1000, 
+  max: 5,
   message: {
     message: "Too many login attempts from this IP, please try again after 15 minutes.",
   },
@@ -71,6 +141,40 @@ router.post("/register", async (req, res) => {
     if (password.length < 12) {
       return res.status(400).json({
         message: "Password must be at least 12 characters long.",
+      });
+    }
+
+      // Validate username length
+    if (cleanUsername.length < 3) {
+      return res.status(400).json({
+        message: "Username must be at least 3 characters long.",
+      });
+    }    
+
+    // Validate allowed gender values
+    const allowedGenders = ["male", "female", "other"];
+
+    if (!allowedGenders.includes(String(gender).toLowerCase())) {
+      return res.status(400).json({
+        message: "Invalid gender. Use: male, female, or other.",
+      });
+    }
+
+      // Validate allowed blood type values
+    const allowedBloodTypes = [
+      "O+",
+      "O-",
+      "A+",
+      "A-",
+      "B+",
+      "B-",
+      "AB+",
+      "AB-",
+    ];
+
+    if (!allowedBloodTypes.includes(String(blood_type).toUpperCase())) {
+      return res.status(400).json({
+        message: "Invalid blood type. Use: O+, O-, A+, A-, B+, B-, AB+, or AB-.",
       });
     }
 
