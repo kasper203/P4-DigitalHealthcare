@@ -69,6 +69,7 @@ const CreateUser = () => {
           name="username"
           placeholder="Username"
           value={formData.username}
+          pattern="^[A-Za-z0-9_]{3,20}$"
           onChange={handleChange}
         />
 
@@ -77,6 +78,7 @@ const CreateUser = () => {
           name="name"
           placeholder="Full name"
           value={formData.name}
+          pattern="^[A-Za-zÀ-ÿ\s\-]{2,50}$"
           onChange={handleChange}
         />
 
@@ -85,6 +87,7 @@ const CreateUser = () => {
           name="cpr"
           placeholder="CPR"
           value={formData.cpr}
+          pattern="^\d{6}-?\d{4}$"         
           onChange={handleChange}
         />
 
@@ -100,6 +103,7 @@ const CreateUser = () => {
           name="address"
           placeholder="Address"
           value={formData.address}
+          pattern="^[A-Za-z0-9\s\-]{2,100}$"
           onChange={handleChange}
         />
 
@@ -108,6 +112,7 @@ const CreateUser = () => {
           name="gender"
           placeholder="Gender"
           value={formData.gender}
+          pattern="^[a-zA-Z]$"
           onChange={handleChange}
         />
 
@@ -116,6 +121,7 @@ const CreateUser = () => {
           name="blood_type"
           placeholder="Blood type"
           value={formData.blood_type}
+          pattern="^(A|B|AB|O)[+-]$"
           onChange={handleChange}
         />
 
@@ -124,6 +130,7 @@ const CreateUser = () => {
           name="password"
           placeholder="Password"
           value={formData.password}
+          pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
           onChange={handleChange}
         />
 
@@ -132,6 +139,7 @@ const CreateUser = () => {
           name="confirmPassword"
           placeholder="Confirm password"
           value={formData.confirmPassword}
+          pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
           onChange={handleChange}
         />
         <br />

@@ -63,6 +63,7 @@ const DoctorLogin = () => {
           name="username"
           placeholder="Username"
           value={formData.username}
+          pattern="^[A-Za-z0-9_]{3,20}$"
           onChange={handleChange}
         />
 
@@ -71,6 +72,7 @@ const DoctorLogin = () => {
           name="password"
           placeholder="Password"
           value={formData.password}
+          pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
           onChange={handleChange}
         />
 
@@ -81,7 +83,7 @@ const DoctorLogin = () => {
           value={formData.otp_code}
           onChange={handleChange}
           inputMode="numeric"
-          pattern="[0-9]*"
+          pattern="^[0-9]{6}$"
         />
 
         <button type="submit">Login</button>
