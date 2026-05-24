@@ -280,9 +280,9 @@ router.post("/change-password", authenticateToken, async (req, res) => {
       return res.status(400).json({ message: "New passwords do not match." });
     }
 
-    if (newPassword.length < 8) {
+    if (newPassword.length < 14) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters long.",
+        message: "Password must be at least 14 characters long.",
       });
     }
 
