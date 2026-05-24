@@ -131,6 +131,7 @@ const ChangePassword = () => {
             id="newPassword"
             name="newPassword"
             value={formData.newPassword}
+            pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
             onChange={handleChange}
             required
           />
@@ -143,6 +144,7 @@ const ChangePassword = () => {
             id="confirmPassword"
             name="confirmPassword"
             value={formData.confirmPassword}
+            pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
             onChange={handleChange}
             required
           />
