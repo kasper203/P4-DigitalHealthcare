@@ -130,7 +130,7 @@ const CreateUser = () => {
           name="password"
           placeholder="Password"
           value={formData.password}
-          pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
+          pattern="^[A-Za-z\d@$!%*?&]{12,}$"
           onChange={handleChange}
         />
 
@@ -139,7 +139,7 @@ const CreateUser = () => {
           name="confirmPassword"
           placeholder="Confirm password"
           value={formData.confirmPassword}
-          pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
+          pattern="^[A-Za-z\d@$!%*?&]{12,}$"
           onChange={handleChange}
         />
         <br />
