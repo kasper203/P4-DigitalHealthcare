@@ -59,8 +59,8 @@ const ChangePassword = () => {
         throw new Error("New passwords do not match.");
       }
 
-      if (formData.newPassword.length < 12) {
-        throw new Error("Password must be at least 12 characters long.");
+      if (formData.newPassword.length < 14) {
+        throw new Error("Password must be at least 14 characters long.");
       }
 
       if (formData.currentPassword === formData.newPassword) {
@@ -131,7 +131,7 @@ const ChangePassword = () => {
             id="newPassword"
             name="newPassword"
             value={formData.newPassword}
-            pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
+            pattern="^[A-Za-z\\d@$!%*?&]{14,}$"
             onChange={handleChange}
             required
           />
@@ -144,7 +144,7 @@ const ChangePassword = () => {
             id="confirmPassword"
             name="confirmPassword"
             value={formData.confirmPassword}
-            pattern="^[A-Za-z\\d@$!%*?&]{12,}$"
+            pattern="^[A-Za-z\\d@$!%*?&]{14,}$"
             onChange={handleChange}
             required
           />

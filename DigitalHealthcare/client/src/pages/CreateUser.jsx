@@ -42,8 +42,8 @@ const CreateUser = () => {
       return;
     }
 
-    if (!password || password.length < 12) {
-      setMessage("Password must be at least 12 characters long.");
+    if (!password || password.length < 14) {
+      setMessage("Password must be at least 14 characters long.");
       return;
     }
 
@@ -110,9 +110,9 @@ const CreateUser = () => {
         <input
           type="text"
           name="gender"
-          placeholder="Gender"
+          placeholder="Gender (male, female, other)"
           value={formData.gender}
-          pattern="^[a-zA-Z]+$"
+          pattern="^(male|female|other)$"
           onChange={handleChange}
         />
 
@@ -130,7 +130,7 @@ const CreateUser = () => {
           name="password"
           placeholder="Password"
           value={formData.password}
-          pattern="^[A-Za-z\d@$!%*?&]{12,}$"
+          pattern="^[A-Za-z\d@$!%*?&]{14,}$"
           onChange={handleChange}
         />
 
@@ -139,7 +139,7 @@ const CreateUser = () => {
           name="confirmPassword"
           placeholder="Confirm password"
           value={formData.confirmPassword}
-          pattern="^[A-Za-z\d@$!%*?&]{12,}$"
+          pattern="^[A-Za-z\d@$!%*?&]{14,}$"
           onChange={handleChange}
         />
         <br />
