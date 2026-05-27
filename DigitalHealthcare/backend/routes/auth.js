@@ -68,9 +68,9 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Passwords do not match." });
     }
 
-    if (password.length < 8) {
+    if (password.length < 14) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters long.",
+        message: "Password must be at least 14 characters long.",
       });
     }
 
@@ -78,7 +78,35 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({
         message: "Username must be at least 3 characters long.",
       });
-    }    
+    }
+
+    // Server-side format validation (defence-in-depth).
+    const usernameRegex = /^[A-Za-z0-9_]{3,20}$/;
+    const nameRegex = /^[A-Za-zÀ-ÿ\s\-]{2,50}$/;
+    const cprRegex = /^\d{6}-?\d{4}$/;
+    const dobRegex = /^\d{4}-\d{2}-\d{2}$/; // YYYY-MM-DD
+    const addressRegex = /^[A-Za-z0-9\s\-]{2,100}$/;
+
+    const usernameValue = String(username || "");
+    if (!usernameRegex.test(usernameValue)) {
+      return res.status(400).json({ message: "Invalid username format. Use 3-20 letters, numbers or underscores." });
+    }
+
+    if (!nameRegex.test(String(name || ""))) {
+      return res.status(400).json({ message: "Invalid name format." });
+    }
+
+    if (!cprRegex.test(String(cpr || ""))) {
+      return res.status(400).json({ message: "Invalid CPR format. Use DDMMYY-XXXX or DDMMYYXXXX." });
+    }
+
+    if (!dobRegex.test(String(date_of_birth || ""))) {
+      return res.status(400).json({ message: "Invalid date_of_birth format. Use YYYY-MM-DD." });
+    }
+
+    if (!addressRegex.test(String(address || ""))) {
+      return res.status(400).json({ message: "Invalid address format." });
+    }
 
     const allowedGenders = ["male", "female", "other"];
 
