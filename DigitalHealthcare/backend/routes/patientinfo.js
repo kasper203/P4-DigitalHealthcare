@@ -130,7 +130,7 @@ router.post('/assign', async (req, res) => {
   }
 
   const authRole = String(req.auth?.role || '').toLowerCase();
-  if (authRole !== 'doctor' && Number(req.auth.userId) !== userId) {
+  if (Number(req.auth.userId) !== userId) {
     return res.status(403).json({ error: 'You do not have access to update this patient.' });
   }
 

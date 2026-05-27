@@ -41,7 +41,8 @@ router.post('/', async (req, res) => {
 
   const userId = Number(req.body.user_id);
   const journalInput = String(req.body.journal_input || '').trim();
-  const author = String(req.body.author || '').trim();
+  // Author is taken from the authenticated JWT to prevent spoofing
+  const authorFromToken = String(req.auth?.username || req.auth?.userId || '').trim();
 
   if (!userId) {
     return res.status(400).json({ error: 'Invalid user_id' });
@@ -51,12 +52,12 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'journal_input is required' });
   }
 
-  if (!author) {
-    return res.status(400).json({ error: 'author is required' });
+  if (!authorFromToken) {
+    return res.status(400).json({ error: 'Author not available from token' });
   }
 
   const encryptedJournalInput = encryptField(journalInput);
-  const encryptedAuthor = encryptField(author);
+  const encryptedAuthor = encryptField(authorFromToken);
 
   const sql = `
     INSERT INTO Journal (user_id, journal_input, date, author)
@@ -76,7 +77,7 @@ router.post('/', async (req, res) => {
       id: result.insertId,
       user_id: userId,
       journal_input: journalInput,
-      author
+      author: authorFromToken
     });
   } catch (err) {
     console.error(err);
