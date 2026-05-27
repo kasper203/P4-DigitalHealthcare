@@ -48,7 +48,8 @@ router.post('/', async (req, res) => {
   const userId = Number(req.body.user_id);
   const testResult = String(req.body.test_result || '').trim();
   const testType = String(req.body.test_type || '').trim();
-  const author = String(req.body.author || '').trim();
+  // Author is taken from the authenticated JWT to prevent spoofing
+  const authorFromToken = String(req.auth?.username || req.auth?.userId || '').trim();
 
   if (!userId) {
     return res.status(400).json({ error: 'Invalid user_id' });
@@ -62,13 +63,13 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'test_type is required' });
   }
 
-  if (!author) {
-    return res.status(400).json({ error: 'author is required' });
+  if (!authorFromToken) {
+    return res.status(400).json({ error: 'Author not available from token' });
   }
 
   const encryptedTestResult = encryptField(testResult);
   const encryptedTestType = encryptField(testType);
-  const encryptedAuthor = encryptField(author);
+  const encryptedAuthor = encryptField(authorFromToken);
 
   const sql = `
     INSERT INTO TestInfo (user_id, test_result, date, test_type, author)
@@ -88,7 +89,7 @@ router.post('/', async (req, res) => {
       user_id: userId,
       test_result: testResult,
       test_type: testType,
-      author,
+      author: authorFromToken,
     });
   } catch (err) {
     console.error(err);
