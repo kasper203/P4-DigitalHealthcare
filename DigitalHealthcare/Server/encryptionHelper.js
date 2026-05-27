@@ -1,7 +1,4 @@
 const crypto = require("node:crypto");
-
-// 32-byte key should be stored outside the database
-// put ENC_KEY in .env when i have generated a base64 string once.
 const ENC_KEY = Buffer.from(process.env.ENC_KEY, "base64");
 
 if (ENC_KEY.length !== 32) {
@@ -22,8 +19,6 @@ function encryptField(plaintext) {
 
   const tag = cipher.getAuthTag();
 
-  // store iv, tag, ciphertext together
-
   return JSON.stringify({
     iv: iv.toString("base64"),
     tag: tag.toString("base64"),
@@ -33,8 +28,6 @@ function encryptField(plaintext) {
 
 function decryptField(payload) {
   if (payload === null || payload === undefined) return null;
-
-  // If payload is not a string or doesn't start with '{', assume it's plain text
   if (typeof payload !== 'string' || !payload.startsWith('{')) {
     return payload;
   }
@@ -44,11 +37,9 @@ function decryptField(payload) {
   try {
     parsed = JSON.parse(payload);
   } catch (err) {
-    // If JSON parsing fails, assume it's plain text
     return payload;
   }
 
-  // Check if it has the expected structure
   if (!parsed.iv || !parsed.tag || !parsed.data) {
     return payload;
   }
