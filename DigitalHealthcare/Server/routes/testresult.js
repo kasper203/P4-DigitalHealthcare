@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('../db'); // mysql pool
+const db = require('../db');
 const router = express.Router();
 const { encryptField, decryptField } = require('../encryptionHelper');
 const { authenticateToken, canAccessUserRecord } = require('../middleware/jwtAuth');
@@ -16,7 +16,6 @@ router.get('/user/:userId', async (req, res) => {
     return res.status(403).json({ error: 'You do not have access to this patient.' });
   }
 
-  // If requester is a doctor, ensure they are assigned to this patient
   try {
     const [patientRows] = await db.execute('SELECT doctor_id FROM PatientInfo WHERE user_id = ? LIMIT 1', [userId]);
     if (!patientRows.length) return res.status(404).json({ error: 'Patient not found' });
@@ -38,7 +37,7 @@ router.get('/user/:userId', async (req, res) => {
   `;
 
   try {
-    const [rows] = await db.execute(sql, [userId]); // parameterized
+    const [rows] = await db.execute(sql, [userId]); 
 
     const decryptedRows = rows.map((row) => ({
       ...row,
@@ -62,7 +61,6 @@ router.post('/', async (req, res) => {
   const userId = Number(req.body.user_id);
   const testResult = String(req.body.test_result || '').trim();
   const testType = String(req.body.test_type || '').trim();
-  // Author is taken from the authenticated JWT to prevent spoofing
   const authorFromToken = String(req.auth?.username || req.auth?.userId || '').trim();
 
   const MAX_TESTRESULT_LENGTH = 2000;
@@ -72,7 +70,6 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Invalid user_id' });
   }
 
-  // Ensure the doctor is assigned to this patient before creating an entry
   try {
     const [patientRows] = await db.execute('SELECT doctor_id FROM PatientInfo WHERE user_id = ? LIMIT 1', [userId]);
     if (!patientRows.length) return res.status(404).json({ error: 'Patient not found' });

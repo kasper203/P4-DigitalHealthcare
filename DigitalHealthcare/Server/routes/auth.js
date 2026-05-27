@@ -243,7 +243,7 @@ router.post("/login", loginLimiter, async (req, res) => {
     }
 
     const account = rows[0];
-    // decrypt multifa_secret if it was stored encrypted
+
     try {
       account.multifa_secret = decryptField(account.multifa_secret);
     } catch (err) {

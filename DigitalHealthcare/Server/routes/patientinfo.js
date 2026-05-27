@@ -33,7 +33,6 @@ router.get('/user/:userId', async (req, res) => {
 
     const patient = rows[0];
 
-    // If the requester is a doctor, only allow access to patients assigned to that doctor
     const authRole = String(req.auth?.role || '').toLowerCase();
     if (authRole === 'doctor' && Number(req.auth.userId) !== Number(patient.doctor_id)) {
       return res.status(403).json({ error: 'You do not have access to this patient.' });
@@ -56,7 +55,6 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-// Get all patients for a specific doctor
 router.get('/doctor/:doctorId', async (req, res) => {
   const doctorId = Number(req.params.doctorId);
   if (!doctorId) {
@@ -116,7 +114,6 @@ router.get('/doctors', async (req, res) => {
   }
 });
 
-// Assign a patient to a doctor by user_id
 router.post('/assign', async (req, res) => {
   const { patientUserId, doctorId } = req.body;
 
@@ -154,7 +151,6 @@ router.post('/assign', async (req, res) => {
   }
 });
 
-// Remove a patient from a doctor
 router.post('/unassign', async (req, res) => {
   const { patientUserId, doctorId } = req.body;
 

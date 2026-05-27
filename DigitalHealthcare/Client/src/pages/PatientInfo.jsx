@@ -22,7 +22,6 @@ const PatientInfo = () => {
   useEffect(() => {
     const loadPatientInfo = async () => {
       try {
-        // If patientId is provided via URL params, use it; otherwise use logged-in user's id
         let userId;
         if (patientId) {
           userId = Number(patientId);

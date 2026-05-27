@@ -137,7 +137,6 @@ return (
           try {
             setActionMessage('Switching doctor...');
             await switchPatientDoctor(patientInfo.user_id, selectedDoctorId);
-            // refresh patient info
             const storedUser = getStoredUser();
             const updated = await fetchPatientInfoForUser(storedUser.user_id);
             setPatientInfo(updated);
