@@ -70,6 +70,7 @@ const PatientLogin = () => {
           name="password"
           placeholder="Password"
           value={formData.password}
+          pattern="^[A-Za-z\d@$!%*?&]{14,}$"
           onChange={handleChange}
         />
 
