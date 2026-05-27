@@ -81,15 +81,15 @@ router.post("/register", async (req, res) => {
     }
 
     // Server-side format validation (defence-in-depth).
-    const usernameRegex = /^[A-Za-z0-9_]{3,20}$/;
-    const nameRegex = /^[A-Za-zÀ-ÿ\s\-]{2,50}$/;
+    const usernameRegex = /^[A-Za-z0-9_]{3,50}$/;
+    const nameRegex = /^[A-Za-zÀ-ÿ\s\-]{3,50}$/;
     const cprRegex = /^\d{6}-?\d{4}$/;
     const dobRegex = /^\d{4}-\d{2}-\d{2}$/; // YYYY-MM-DD
     const addressRegex = /^[A-Za-z0-9\s\-]{2,100}$/;
 
     const usernameValue = String(username || "");
     if (!usernameRegex.test(usernameValue)) {
-      return res.status(400).json({ message: "Invalid username format. Use 3-20 letters, numbers or underscores." });
+      return res.status(400).json({ message: "Invalid username format. Use 3-50 letters, numbers or underscores." });
     }
 
     if (!nameRegex.test(String(name || ""))) {
