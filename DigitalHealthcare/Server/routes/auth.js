@@ -152,7 +152,7 @@ router.post("/register", async (req, res) => {
 
     const encryptedName = encryptField(name);
     const encryptedCpr = encryptField(cpr);
-    const encryptedDob = date_of_birth; // leave as DATE if you want date logic
+    const encryptedDob = date_of_birth;
     const encryptedAddress = encryptField(address);
     const encryptedGender = encryptField(gender);
     const encryptedBloodType = encryptField(blood_type);
